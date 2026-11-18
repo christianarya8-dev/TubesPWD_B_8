@@ -335,5 +335,6 @@ $daftar = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         </tbody>
     </table>
+<script src="js/konfirmasi.js"></script>
 </body>
 </html>

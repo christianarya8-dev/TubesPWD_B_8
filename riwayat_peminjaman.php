@@ -166,5 +166,6 @@ $riwayat = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
         </tbody>
     </table>
+<script src="js/konfirmasi.js"></script>
 </body>
 </html>

@@ -166,5 +166,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
 </div>
+<script src="js/auth.js"></script>
 </body>
 </html>

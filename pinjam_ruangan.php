@@ -245,5 +245,6 @@ $ruangan = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
 </div>
+<script src="js/index.js"></script>
 </body>
 </html>

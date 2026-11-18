@@ -72,5 +72,6 @@ $nama = aman($_SESSION["nama_lengkap"]);
         <button type="submit">Logout</button>
     </form>
 </div>
+<script src="js/konfirmasi.js"></script>
 </body>
 </html>

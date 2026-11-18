@@ -1,50 +1,136 @@
-// Menunggu seluruh halaman HTML selesai dimuat
 document.addEventListener("DOMContentLoaded", function () {
-    const formPeminjaman = document.getElementById("form_peminjaman");
+    const form = document.querySelector("form");
+    if (!form) return;
 
-    if (formPeminjaman) {
-        formPeminjaman.addEventListener("submit", function (event) {
-            // 1. Ambil semua nilai berdasarkan kolom tabel 'peminjaman'
-            const selectRuangan = document.getElementById("id_ruangan");
-            const tanggal = document.getElementById("tanggal").value;
-            const jamMulai = document.getElementById("jam_mulai").value;
-            const jamSelesai = document.getElementById("jam_selesai").value;
-            const jumlahPeserta = parseInt(document.getElementById("jumlah_peserta").value);
-            const keperluan = document.getElementById("keperluan").value.trim();
+    const selectRuangan = form.querySelector('[name="id_ruangan"]');
+    const inputTanggal = form.querySelector('[name="tanggal"]');
+    const inputMulai = form.querySelector('[name="jam_mulai"]');
+    const inputSelesai = form.querySelector('[name="jam_selesai"]');
+    const inputPeserta = form.querySelector('[name="jumlah_peserta"]');
+    const inputKeperluan = form.querySelector('[name="keperluan"]');
 
-            // Ambil tanggal hari ini format YYYY-MM-DD
-            const hariIni = new Date().toISOString().split("T")[0];
+    const hariIni = new Date().toISOString().split("T")[0];
+    if (inputTanggal) {
+        inputTanggal.setAttribute("min", hariIni);
+    }
 
-            // 2. Cek kolom kosong
-            if (!selectRuangan.value || !tanggal || !jamMulai || !jamSelesai || !jumlahPeserta || !keperluan) {
-                event.preventDefault();
-                alert("Semua kolom wajib diisi sebelum mengajukan peminjaman!");
-                return;
-            }
+    // Buat teks info kapasitas otomatis di bawah input peserta
+    let infoKapasitas = null;
+    if (inputPeserta) {
+        infoKapasitas = document.createElement("small");
+        infoKapasitas.style.display = "block";
+        infoKapasitas.style.marginTop = "4px";
+        infoKapasitas.style.color = "#243b53";
+        inputPeserta.insertAdjacentElement("afterend", infoKapasitas);
+    }
 
-            // 3. Validasi tanggal (tidak boleh memilih hari yang sudah lewat)
-            if (tanggal < hariIni) {
-                event.preventDefault();
-                alert("Tanggal peminjaman tidak boleh di masa lalu!");
-                return;
-            }
+    // Buat teks info durasi otomatis di bawah input jam selesai
+    let infoDurasi = null;
+    if (inputSelesai) {
+        infoDurasi = document.createElement("small");
+        infoDurasi.style.display = "block";
+        infoDurasi.style.marginTop = "4px";
+        inputSelesai.insertAdjacentElement("afterend", infoDurasi);
+    }
 
-            // 4. Validasi jam (jam_selesai harus lebih besar dari jam_mulai)
-            if (jamMulai >= jamSelesai) {
-                event.preventDefault();
-                alert("Jam selesai harus lebih akhir dari jam mulai!");
-                return;
-            }
+    // Fungsi membaca kapasitas maksimal ruangan
+    function ambilMaksKapasitas() {
+        if (selectRuangan && selectRuangan.selectedIndex >= 0) {
+            const teksOpsi = selectRuangan.options[selectRuangan.selectedIndex].text;
+            const cocok = teksOpsi.match(/\((\d+)\s*orang\)/i);
+            if (cocok) return parseInt(cocok[1], 10);
+        }
+        if (inputPeserta && inputPeserta.hasAttribute("max")) {
+            return parseInt(inputPeserta.getAttribute("max"), 10);
+        }
+        return null;
+    }
 
-            // 5. Validasi kapasitas ruangan (mengambil atribut data-kapasitas dari option ruangan)
-            const opsiTerpilih = selectRuangan.options[selectRuangan.selectedIndex];
-            const maksKapasitas = parseInt(opsiTerpilih.getAttribute("data-kapasitas"));
-
-            if (maksKapasitas && jumlahPeserta > maksKapasitas) {
-                event.preventDefault();
-                alert("Jumlah peserta (" + jumlahPeserta + " orang) melebihi kapasitas maksimal ruangan ini (" + maksKapasitas + " orang)!");
-                return;
+    // Update batas maksimal peserta saat ruangan dipilih
+    if (selectRuangan && inputPeserta) {
+        selectRuangan.addEventListener("change", function () {
+            const maks = ambilMaksKapasitas();
+            if (maks) {
+                inputPeserta.setAttribute("max", maks);
+                infoKapasitas.textContent = "Kapasitas maksimal ruangan ini: " + maks + " orang.";
+            } else {
+                inputPeserta.removeAttribute("max");
+                infoKapasitas.textContent = "";
             }
         });
     }
+
+    // Hitung durasi peminjaman secara real-time
+    function hitungDurasi() {
+        if (!inputMulai || !inputSelesai || !infoDurasi) return;
+        if (!inputMulai.value || !inputSelesai.value) {
+            infoDurasi.textContent = "";
+            return;
+        }
+
+        const [jamM, menitM] = inputMulai.value.split(":").map(Number);
+        const [jamS, menitS] = inputSelesai.value.split(":").map(Number);
+        const selisihMenit = (jamS * 60 + menitS) - (jamM * 60 + menitM);
+
+        if (selisihMenit <= 0) {
+            infoDurasi.style.color = "#b91c1c";
+            infoDurasi.textContent = "Perhatian: Jam selesai harus lebih akhir dari jam mulai.";
+        } else {
+            const jam = Math.floor(selisihMenit / 60);
+            const menit = selisihMenit % 60;
+            infoDurasi.style.color = "#15803d";
+            infoDurasi.textContent = "Durasi peminjaman: " + (jam > 0 ? jam + " jam " : "") + (menit > 0 ? menit + " menit" : "");
+        }
+    }
+
+    if (inputMulai) inputMulai.addEventListener("change", hitungDurasi);
+    if (inputSelesai) inputSelesai.addEventListener("change", hitungDurasi);
+
+    // Validasi saat tombol submit ditekan
+    form.addEventListener("submit", function (event) {
+        if (selectRuangan && !selectRuangan.value) {
+            event.preventDefault();
+            alert("Silakan pilih ruangan terlebih dahulu!");
+            selectRuangan.focus();
+            return;
+        }
+
+        if (inputTanggal && inputTanggal.value < hariIni) {
+            event.preventDefault();
+            alert("Tanggal peminjaman tidak boleh di masa lalu!");
+            inputTanggal.focus();
+            return;
+        }
+
+        if (inputMulai && inputSelesai && inputMulai.value >= inputSelesai.value) {
+            event.preventDefault();
+            alert("Jam selesai harus lebih besar dari jam mulai!");
+            inputSelesai.focus();
+            return;
+        }
+
+        if (inputKeperluan && inputKeperluan.value.trim() === "") {
+            event.preventDefault();
+            alert("Kolom keperluan tidak boleh kosong!");
+            inputKeperluan.focus();
+            return;
+        }
+
+        if (inputPeserta) {
+            const jumlah = parseInt(inputPeserta.value, 10);
+            const maks = ambilMaksKapasitas();
+            if (isNaN(jumlah) || jumlah < 1) {
+                event.preventDefault();
+                alert("Jumlah peserta minimal 1 orang!");
+                inputPeserta.focus();
+                return;
+            }
+            if (maks && jumlah > maks) {
+                event.preventDefault();
+                alert("Jumlah peserta (" + jumlah + " orang) melebihi kapasitas ruangan (" + maks + " orang)!");
+                inputPeserta.focus();
+                return;
+            }
+        }
+    });
 });

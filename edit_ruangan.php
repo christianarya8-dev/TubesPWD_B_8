@@ -191,5 +191,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </p>
 </div>
 
+<script src="js/ruangan.js"></script>
 </body>
 </html>

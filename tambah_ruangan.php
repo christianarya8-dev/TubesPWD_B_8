@@ -159,5 +159,6 @@ function aman($teks) {
     </p>
 </div>
 
+<script src="js/ruangan.js"></script>
 </body>
 </html>

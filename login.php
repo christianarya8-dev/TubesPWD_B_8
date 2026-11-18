@@ -147,5 +147,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <a href="register.php">Daftar di sini</a>
     </p>
 </div>
+<script src="js/auth.js"></script>
 </body>
 </html>

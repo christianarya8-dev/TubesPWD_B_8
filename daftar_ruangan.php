@@ -188,5 +188,6 @@ $data_ruangan = $query->fetchAll(PDO::FETCH_ASSOC);
         </tbody>
     </table>
 
+<script src="js/ruangan.js"></script>
 </body>
 </html>

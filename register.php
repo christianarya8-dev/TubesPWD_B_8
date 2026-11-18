@@ -204,5 +204,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </p>
 
 </div>
+<script src="js/auth.js"></script>
 </body>
 </html>
