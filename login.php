@@ -25,10 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $err = 'Username/email atau password salah.';
 }
 
-// Render the login form
-//pppppp
-
-////kakakk
 header_html('Login');
 ?>
 <h1>Login</h1>
