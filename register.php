@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 // Muat template HTML
-$html = file_get_contents(__DIR__ . "/register.html");
+$html = file_get_contents(__DIR__ . "/register.xhtml");
 
 if ($html === false) {
     http_response_code(500);

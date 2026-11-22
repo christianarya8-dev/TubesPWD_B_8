@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 40px 15px;
+    color: #1f2933;
+}
+
+.kotak {
+    max-width: 500px;
+    margin: auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+h1 {
+    color: #243b53;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.subjudul {
+    color: #486581;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.detail-box {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #243b53;
+    border-radius: 8px;
+    padding: 14px 16px;
+}
+
+.detail-box p {
+    margin: 8px 0;
+}
+
+.pesan-error {
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-left: 4px solid #b91c1c;
+}
+
+.grup-aksi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.btn-batal-peminjaman,
+.btn-kembali,
+.btn-kembali-penuh {
+    display: inline-block;
+    padding: 11px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+}
+
+.btn-batal-peminjaman {
+    background: #b91c1c;
+    color: #ffffff;
+}
+
+.btn-batal-peminjaman:hover {
+    background: #991b1b;
+}
+
+.btn-kembali {
+    background: #e2e8f0;
+    color: #243b53;
+}
+
+.btn-kembali:hover {
+    background: #cbd5e1;
+}
+
+.btn-kembali-penuh {
+    width: 100%;
+    box-sizing: border-box;
+    background: #243b53;
+    color: #ffffff;
+}
+
+.btn-kembali-penuh:hover {
+    background: #334e68;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Batalkan Peminjaman - CampusSpace</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="CSS/batalkan_peminjaman.css" />
+</head>
+<body>
+<div class="kotak">
+    <h1>Batalkan Peminjaman</h1>
+
+    <!-- KONFIRMASI_START -->
+    <p class="subjudul">Periksa detail pengajuan berikut sebelum membatalkan peminjaman ruangan:</p>
+
+    <div class="detail-box">
+        <p><strong>Ruangan:</strong> {{NAMA_RUANGAN}} ({{NAMA_GEDUNG}})</p>
+        <p><strong>Tanggal:</strong> {{TANGGAL}}</p>
+        <p><strong>Waktu:</strong> {{JAM_MULAI}} - {{JAM_SELESAI}}</p>
+        <p><strong>Keperluan:</strong> {{KEPERLUAN}}</p>
+        <p><strong>Jumlah Peserta:</strong> {{JUMLAH_PESERTA}} orang</p>
+    </div>
+
+    <form method="post" action="batalkan_peminjaman.php" class="grup-aksi">
+        <input type="hidden"
+               name="csrf_token"
+               value="{{CSRF_TOKEN}}" />
+
+        <input type="hidden"
+               name="id_peminjaman"
+               value="{{ID_PEMINJAMAN}}" />
+
+        <button type="submit" class="btn-batal-peminjaman">Ya, Batalkan Peminjaman</button>
+        <a href="riwayat_peminjaman.php" class="btn-kembali">Kembali</a>
+    </form>
+    <!-- KONFIRMASI_END -->
+
+    <!-- ERROR_START -->
+    <p class="pesan-error">{{PESAN_ERROR}}</p>
+
+    <div class="grup-aksi">
+        <a href="riwayat_peminjaman.php" class="btn-kembali-penuh">Kembali ke Riwayat Peminjaman</a>
+    </div>
+    <!-- ERROR_END -->
+</div>
+</body>
+</html>
