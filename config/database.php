@@ -1,7 +1,7 @@
 <?php
-$host = "127.0.0.1";
+$host = "localhost";
 $port = 3306; 
-$nama_database = "peminjaman_ruangan";
+$nama_database = "campusspace";
 $username = "root";
 $password = "";
 
