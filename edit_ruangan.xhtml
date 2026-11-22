@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Edit Ruangan - CampusSpace</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="CSS/edit_ruangan.css" />
+</head>
+<body>
+
+<div class="form-box">
+    <h1>Edit Data Ruangan</h1>
+
+    <!-- PESAN_START -->
+    <p class="error">{{PESAN}}</p>
+    <!-- PESAN_END -->
+
+    <form method="post" action="edit_ruangan.php?id={{ID_RUANGAN}}">
+
+        <input type="hidden"
+               name="csrf_token"
+               value="{{CSRF_TOKEN}}" />
+
+        <label for="kode">Kode Ruangan</label>
+        <input type="text"
+               id="kode"
+               name="kode_ruangan"
+               value="{{KODE_RUANGAN}}"
+               required="required" />
+
+        <label for="nama">Nama Ruangan</label>
+        <input type="text"
+               id="nama"
+               name="nama_ruangan"
+               value="{{NAMA_RUANGAN}}"
+               required="required" />
+
+        <label for="gedung">Gedung</label>
+        <select id="gedung"
+                name="id_gedung"
+                required="required">
+            {{OPSI_GEDUNG}}
+        </select>
+
+        <label for="kapasitas">Kapasitas</label>
+        <input type="number"
+               id="kapasitas"
+               name="kapasitas"
+               min="1"
+               value="{{KAPASITAS}}"
+               required="required" />
+
+        <label for="deskripsi">Deskripsi</label>
+        <textarea id="deskripsi"
+                  name="deskripsi"
+                  rows="4"
+                  cols="40">{{DESKRIPSI}}</textarea>
+
+        <button type="submit">Simpan Perubahan</button>
+    </form>
+
+    <p class="bawah">
+        <a href="daftar_ruangan.php">Kembali ke Daftar Ruangan</a>
+    </p>
+</div>
+
+<script src="JS/ruangan.js"></script>
+</body>
+</html>
