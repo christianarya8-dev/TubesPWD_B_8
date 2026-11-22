@@ -5,7 +5,8 @@
   --bg-card: #ffffff;
   --text-main: #1f2933;
   --text-secondary: #4b5563;
-  --border-color: #e2e8f0;
+  --border-color: #cbd5e1;       /* Ditingkatkan sedikit agar garis pembatas lebih tegas & rapi */
+  --focus-border: #111827;
   --danger: #ef4444;
   --danger-hover: #dc2626;
   --radius-sm: 8px;
@@ -25,6 +26,7 @@ body {
   align-items: center;
   min-height: 100vh;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* --- KOTAK UTAMA (CARD) --- */
@@ -33,11 +35,12 @@ body {
   max-width: 500px;
   margin: auto;
   background: var(--bg-card);
-  padding: 36px;
+  padding: 38px 32px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid #e2e8f0;
   animation: fadeIn 0.3s ease-out;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -69,13 +72,14 @@ h1 {
   border-left: 4px solid var(--primary-dark);
   border-radius: var(--radius-sm);
   padding: 16px 18px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .detail-box p {
   margin: 8px 0;
   font-size: 0.92rem;
   color: var(--text-main);
+  line-height: 1.4;
 }
 
 /* --- PESAN ERROR --- */
@@ -88,6 +92,7 @@ h1 {
   color: #991b1b;
   border-left: 4px solid var(--danger);
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  margin-bottom: 16px;
 }
 
 /* --- GRUP AKSI & TOMBOL --- */
@@ -138,6 +143,7 @@ h1 {
 .btn-kembali:hover {
   background: #e2e8f0;
   border-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
 .btn-kembali-penuh {

@@ -5,7 +5,7 @@
   --bg-card: #ffffff;
   --text-main: #1f2933;
   --text-secondary: #4b5563;
-  --border-color: #e2e8f0;
+  --border-color: #cbd5e1;       /* Ditingkatkan agar border kartu lebih tegas dan rapi */
   --danger: #ef4444;
   --danger-hover: #dc2626;
   --success-bg: #dcfce7;
@@ -28,6 +28,7 @@ body {
   align-items: center;
   min-height: 100vh;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* --- KOTAK UTAMA (CARD) --- */
@@ -35,12 +36,12 @@ body {
   width: 100%;
   max-width: 440px;
   margin: auto;
-  padding: 38px 30px;
+  padding: 40px 32px;
   background: var(--bg-card);
   border-radius: var(--radius-md);
   text-align: center;
   box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid #e2e8f0;
   animation: fadeIn 0.3s ease-out;
   box-sizing: border-box;
 }
@@ -71,7 +72,8 @@ p {
   line-height: 1.6;
   color: var(--text-secondary);
   font-size: 0.92rem;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  margin-top: 0;
 }
 
 /* --- PESAN SUKSES --- */
@@ -84,7 +86,7 @@ p {
   color: var(--success-text);
   border-left: 4px solid var(--success-border);
   text-align: left;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
@@ -135,6 +137,7 @@ p {
 .btn-batal:hover {
   background: #e2e8f0;
   border-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
 .btn-login {
