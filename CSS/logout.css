@@ -1,0 +1,94 @@
+    body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 40px 15px;
+    color: #1f2933;
+}
+
+.kotak {
+    max-width: 440px;
+    margin: auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+h1 {
+    color: #243b53;
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+h2 {
+    color: #334e68;
+    font-size: 18px;
+    margin-top: 0;
+}
+
+p {
+    line-height: 1.5;
+    color: #486581;
+}
+
+.pesan-sukses {
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #dcfce7;
+    color: #15803d;
+    border-left: 4px solid #15803d;
+    text-align: left;
+}
+
+.grup-aksi {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.btn-logout,
+.btn-batal,
+.btn-login {
+    display: inline-block;
+    padding: 11px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-logout {
+    background: #b91c1c;
+    color: #ffffff;
+}
+
+.btn-logout:hover {
+    background: #991b1b;
+}
+
+.btn-batal {
+    background: #e2e8f0;
+    color: #243b53;
+}
+
+.btn-batal:hover {
+    background: #cbd5e1;
+}
+
+.btn-login {
+    width: 100%;
+    box-sizing: border-box;
+    background: #243b53;
+    color: #ffffff;
+}
+
+.btn-login:hover {
+    background: #334e68;
+}

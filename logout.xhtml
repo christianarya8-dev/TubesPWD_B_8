@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Logout - CampusSpace</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="CSS/logout.css" />
+</head>
+<body>
+<div class="kotak">
+    <h1>CampusSpace</h1>
+
+    <!-- KONFIRMASI_START -->
+    <div class="konten">
+        <h2>Konfirmasi Logout</h2>
+        <p>Halo, <strong>{{NAMA_PENGGUNA}}</strong>. Apakah Anda yakin ingin keluar dari sistem?</p>
+
+        <form method="post" action="logout.php" class="grup-aksi">
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{CSRF_TOKEN}}" />
+
+            <button type="submit" class="btn-logout">Ya, Logout</button>
+            <a href="dashboard.php" class="btn-batal">Batal</a>
+        </form>
+    </div>
+    <!-- KONFIRMASI_END -->
+
+    <!-- SELESAI_START -->
+    <div class="konten">
+        <p class="pesan-sukses">Anda telah berhasil keluar dari CampusSpace.</p>
+        <p>Terima kasih telah menggunakan layanan peminjaman ruangan kampus.</p>
+
+        <div class="grup-aksi">
+            <a href="login.php" class="btn-login">Login Kembali</a>
+        </div>
+    </div>
+    <!-- SELESAI_END -->
+</div>
+</body>
+</html>
