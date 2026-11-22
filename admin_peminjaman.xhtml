@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Admin Peminjaman - CampusSpace</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="CSS/admin_peminjaman.css" />
+</head>
+<body>
+
+    <nav class="navbar-admin">
+        <div class="navbar-brand">CampusSpace — Panel Admin</div>
+        <div class="navbar-links">
+            <a href="dashboard.php">Dashboard</a>
+            <a href="admin_peminjaman.php" class="aktif">Kelola Peminjaman</a>
+            <a href="daftar_ruangan.php">Kelola Ruangan</a>
+            <a href="tambah_ruangan.php">+ Tambah Ruangan</a>
+            <a href="profil.php">Profil Saya</a>
+            <form method="post" action="logout.php" class="form-logout">
+                <input type="hidden"
+                       name="csrf_token"
+                       value="{{CSRF_TOKEN}}" />
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <h1>Admin - Pengelolaan Peminjaman</h1>
+
+    <div class="menu-status">
+        <a href="admin_peminjaman.php?status=semua" class="{{AKTIF_SEMUA}}">
+            Semua <span class="badge-hitung">{{JML_SEMUA}}</span>
+        </a>
+        <a href="admin_peminjaman.php?status=pending" class="{{AKTIF_PENDING}}">
+            Pending <span class="badge-hitung">{{JML_PENDING}}</span>
+        </a>
+        <a href="admin_peminjaman.php?status=approved" class="{{AKTIF_APPROVED}}">
+            Approved <span class="badge-hitung">{{JML_APPROVED}}</span>
+        </a>
+        <a href="admin_peminjaman.php?status=rejected" class="{{AKTIF_REJECTED}}">
+            Rejected <span class="badge-hitung">{{JML_REJECTED}}</span>
+        </a>
+        <a href="admin_peminjaman.php?status=cancelled" class="{{AKTIF_CANCELLED}}">
+            Cancelled <span class="badge-hitung">{{JML_CANCELLED}}</span>
+        </a>
+    </div>
+
+    <!-- PESAN_START -->
+    <p class="pesan {{KELAS_PESAN}}">{{PESAN}}</p>
+    <!-- PESAN_END -->
+
+    <table>
+        <thead>
+            <tr>
+                <th>Peminjam</th>
+                <th>Ruangan</th>
+                <th>Gedung</th>
+                <th>Tanggal</th>
+                <th>Jam</th>
+                <th>Keperluan</th>
+                <th>Peserta</th>
+                <th>Status</th>
+                <th>Aksi Admin</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{DAFTAR_BARIS}}
+        </tbody>
+    </table>
+
+<script src="JS/konfirmasi.js"></script>
+</body>
+</html>

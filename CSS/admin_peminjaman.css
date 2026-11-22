@@ -1,0 +1,220 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 25px;
+    color: #1f2933;
+}
+
+.navbar-admin {
+    background: #243b53;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar-brand {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.navbar-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar-links a {
+    color: #e2e8f0;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.navbar-links a:hover {
+    background: #334e68;
+    color: #ffffff;
+}
+
+.navbar-links a.aktif {
+    background: #ffffff;
+    color: #243b53;
+    font-weight: bold;
+}
+
+.form-logout {
+    display: inline;
+    margin: 0;
+}
+
+.btn-logout {
+    background: #b91c1c;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn-logout:hover {
+    background: #991b1b;
+}
+
+h1 {
+    color: #243b53;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.menu-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.menu-status a {
+    text-decoration: none;
+    background: #ffffff;
+    color: #243b53;
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.menu-status a:hover {
+    background: #e2e8f0;
+}
+
+.menu-status a.aktif {
+    background: #243b53;
+    color: #ffffff;
+    border-color: #243b53;
+}
+
+.badge-hitung {
+    background: rgba(148, 163, 184, 0.25);
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #cccccc;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #243b53;
+    color: #ffffff;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.pending {
+    background: #fef3c7;
+    color: #a16207;
+}
+
+.approved {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.rejected {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.cancelled {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+textarea {
+    width: 180px;
+    box-sizing: border-box;
+    padding: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+}
+
+.grup-tombol-aksi {
+    margin-top: 6px;
+    display: flex;
+    gap: 6px;
+}
+
+.aksi-btn {
+    padding: 7px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.setuju {
+    background: #15803d;
+    color: #ffffff;
+    border: none;
+}
+
+.setuju:hover {
+    background: #166534;
+}
+
+.tolak {
+    background: #b91c1c;
+    color: #ffffff;
+    border: none;
+}
+
+.tolak:hover {
+    background: #991b1b;
+}
+
+.pesan {
+    padding: 12px 15px;
+    background: #dcfce7;
+    color: #15803d;
+    border-left: 4px solid #15803d;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-weight: bold;
+}
+
+.pesan.error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-left-color: #b91c1c;
+}
+
+form {
+    margin: 0;
+}

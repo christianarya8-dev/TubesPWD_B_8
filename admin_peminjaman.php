@@ -32,8 +32,12 @@ $tipePesan = "sukses";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $token = $_POST["csrf_token"] ?? "";
 
-    if (!is_string($token) ||
-        !hash_equals($_SESSION["csrf_token"], $token)) {
+    if (!is_string($token)) {
+        http_response_code(403);
+        exit("Permintaan tidak valid.");
+    }
+
+    if (!hash_equals($_SESSION["csrf_token"], $token)) {
         http_response_code(403);
         exit("Permintaan tidak valid.");
     }
@@ -47,10 +51,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $aksi = $_POST["aksi"] ?? "";
     $catatan = trim($_POST["catatan_admin"] ?? "");
 
-    if (!$id ||
-        !in_array($aksi, ["approved", "rejected"], true) ||
-        strlen($catatan) > 1000) {
+    if (!$id) {
         $pesan = "Data permintaan tidak valid.";
+        $tipePesan = "error";
+    } elseif (!in_array($aksi, ["approved", "rejected"], true)) {
+        $pesan = "Aksi persetujuan tidak valid.";
+        $tipePesan = "error";
+    } elseif (strlen($catatan) > 1000) {
+        $pesan = "Catatan admin maksimal 1000 karakter.";
         $tipePesan = "error";
     } else {
         try {
@@ -95,11 +103,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $kunci->execute([$id]);
             $data = $kunci->fetch(PDO::FETCH_ASSOC);
 
-            if (!$data ||
-                $data["status_peminjaman"] !== "pending" ||
-                (int)$data["id_ruangan"] !== (int)$idRuangan) {
+            if (!$data) {
+                throw new RuntimeException(
+                    "Pengajuan tidak ditemukan."
+                );
+            }
+
+            if ($data["status_peminjaman"] !== "pending") {
                 throw new RuntimeException(
                     "Pengajuan sudah diproses atau berubah."
+                );
+            }
+
+            if ((int)$data["id_ruangan"] !== (int)$idRuangan) {
+                throw new RuntimeException(
+                    "Data ruangan pengajuan tidak sesuai."
                 );
             }
 
@@ -168,8 +186,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-if (isset($_GET["hasil"]) &&
-    $_GET["hasil"] === "berhasil") {
+if (isset($_GET["hasil"]) && $_GET["hasil"] === "berhasil") {
     $pesan = "Status peminjaman berhasil diperbarui.";
     $tipePesan = "sukses";
 }
@@ -230,301 +247,90 @@ if ($filterAktif === "semua") {
         }
     );
 }
-?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Admin Peminjaman - CampusSpace</title>
-    <meta charset="UTF-8" />
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 25px;
-            color: #1f2933;
-        }
-        .navbar-admin {
-            background: #243b53;
-            padding: 14px 20px;
-            border-radius: 10px;
-            margin-bottom: 22px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-        .navbar-brand {
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .navbar-links {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-        }
-        .navbar-links a {
-            color: #e2e8f0;
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .navbar-links a:hover {
-            background: #334e68;
-            color: #ffffff;
-        }
-        .navbar-links a.aktif {
-            background: #ffffff;
-            color: #243b53;
-            font-weight: bold;
-        }
-        .btn-logout {
-            background: #b91c1c;
-            color: #ffffff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-logout:hover {
-            background: #991b1b;
-        }
-        h1 {
-            color: #243b53;
-            margin-top: 0;
-            margin-bottom: 16px;
-        }
-        .menu-status {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-        .menu-status a {
-            text-decoration: none;
-            background: #ffffff;
-            color: #243b53;
-            padding: 9px 14px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .menu-status a:hover {
-            background: #e2e8f0;
-        }
-        .menu-status a.aktif {
-            background: #243b53;
-            color: #ffffff;
-            border-color: #243b53;
-        }
-        .badge-hitung {
-            background: rgba(148, 163, 184, 0.25);
-            padding: 2px 7px;
-            border-radius: 10px;
-            margin-left: 5px;
-            font-size: 12px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: left;
-            vertical-align: top;
-        }
-        th {
-            background: #243b53;
-            color: white;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 9px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-        .pending { background: #fef3c7; color: #a16207; }
-        .approved { background: #dcfce7; color: #15803d; }
-        .rejected { background: #fee2e2; color: #b91c1c; }
-        .cancelled { background: #f1f5f9; color: #64748b; }
-        textarea {
-            width: 180px;
-            box-sizing: border-box;
-            padding: 6px;
-        }
-        .aksi-btn {
-            padding: 7px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .setuju {
-            background: #15803d;
-            color: white;
-            border: none;
-        }
-        .tolak {
-            background: #b91c1c;
-            color: white;
-            border: none;
-        }
-        .pesan {
-            padding: 12px 15px;
-            background: #dcfce7;
-            color: #15803d;
-            border-left: 4px solid #15803d;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            font-weight: bold;
-        }
-        .pesan.error {
-            background: #fee2e2;
-            color: #b91c1c;
-            border-left-color: #b91c1c;
-        }
-        form { margin: 0; }
-    </style>
-</head>
-<body>
 
-    <nav class="navbar-admin">
-        <div class="navbar-brand">CampusSpace — Panel Admin</div>
-        <div class="navbar-links">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="admin_peminjaman.php" class="aktif">Kelola Peminjaman</a>
-            <a href="daftar_ruangan.php">Kelola Ruangan</a>
-            <a href="tambah_ruangan.php">+ Tambah Ruangan</a>
-            <a href="profil.php">Profil Saya</a>
-            <form method="post" action="logout.php" style="display:inline;">
-                <input type="hidden"
-                       name="csrf_token"
-                       value="<?= aman($_SESSION["csrf_token"]) ?>" />
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
-        </div>
-    </nav>
+$csrfToken = aman($_SESSION["csrf_token"]);
 
-    <h1>Admin - Pengelolaan Peminjaman</h1>
+// Susun baris tabel HTML
+$barisTabelHtml = "";
 
-    <div class="menu-status">
-        <a href="admin_peminjaman.php?status=semua"
-           class="<?= $filterAktif === 'semua' ? 'aktif' : '' ?>">
-            Semua <span class="badge-hitung"><?= $jumlahStatus["semua"] ?></span>
-        </a>
-        <a href="admin_peminjaman.php?status=pending"
-           class="<?= $filterAktif === 'pending' ? 'aktif' : '' ?>">
-            Pending <span class="badge-hitung"><?= $jumlahStatus["pending"] ?></span>
-        </a>
-        <a href="admin_peminjaman.php?status=approved"
-           class="<?= $filterAktif === 'approved' ? 'aktif' : '' ?>">
-            Approved <span class="badge-hitung"><?= $jumlahStatus["approved"] ?></span>
-        </a>
-        <a href="admin_peminjaman.php?status=rejected"
-           class="<?= $filterAktif === 'rejected' ? 'aktif' : '' ?>">
-            Rejected <span class="badge-hitung"><?= $jumlahStatus["rejected"] ?></span>
-        </a>
-        <a href="admin_peminjaman.php?status=cancelled"
-           class="<?= $filterAktif === 'cancelled' ? 'aktif' : '' ?>">
-            Cancelled <span class="badge-hitung"><?= $jumlahStatus["cancelled"] ?></span>
-        </a>
-    </div>
+if (empty($daftar)) {
+    $barisTabelHtml = '<tr><td colspan="9">Belum ada peminjaman pada kategori ini.</td></tr>';
+} else {
+    foreach ($daftar as $p) {
+        $namaPeminjam = aman($p["nama_lengkap"]);
+        $namaRuangan = aman($p["nama_ruangan"]);
+        $namaGedung = aman($p["nama_gedung"]);
+        $tanggal = aman($p["tanggal"]);
+        $jamMulai = aman(substr($p["jam_mulai"], 0, 5));
+        $jamSelesai = aman(substr($p["jam_selesai"], 0, 5));
+        $keperluan = aman($p["keperluan"]);
+        $jumlahPeserta = (int)$p["jumlah_peserta"];
+        $statusRaw = $p["status_peminjaman"];
+        $statusKelas = aman($statusRaw);
+        $statusLabel = aman(ucfirst($statusRaw));
+        $idPeminjaman = (int)$p["id_peminjaman"];
 
-    <?php if ($pesan !== ""): ?>
-        <p class="pesan <?= $tipePesan === 'error' ? 'error' : '' ?>">
-            <?= aman($pesan) ?>
-        </p>
-    <?php endif; ?>
+        if ($statusRaw === "pending") {
+            $kolomAksi = '
+                <form method="post" action="admin_peminjaman.php">
+                    <input type="hidden" name="csrf_token" value="' . $csrfToken . '" />
+                    <input type="hidden" name="id_peminjaman" value="' . $idPeminjaman . '" />
+                    <textarea name="catatan_admin" rows="2" cols="20" maxlength="1000" placeholder="Catatan admin"></textarea>
+                    <div class="grup-tombol-aksi">
+                        <button class="aksi-btn setuju" type="submit" name="aksi" value="approved">Setujui</button>
+                        <button class="aksi-btn tolak" type="submit" name="aksi" value="rejected">Tolak</button>
+                    </div>
+                </form>';
+        } else {
+            $kolomAksi = aman($p["catatan_admin"] ?: "-");
+        }
 
-    <table>
-        <thead>
+        $barisTabelHtml .= '
             <tr>
-                <th>Peminjam</th>
-                <th>Ruangan</th>
-                <th>Gedung</th>
-                <th>Tanggal</th>
-                <th>Jam</th>
-                <th>Keperluan</th>
-                <th>Peserta</th>
-                <th>Status</th>
-                <th>Aksi Admin</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($daftar)): ?>
-                <tr>
-                    <td colspan="9">Belum ada peminjaman pada kategori ini.</td>
-                </tr>
-            <?php endif; ?>
+                <td>' . $namaPeminjam . '</td>
+                <td>' . $namaRuangan . '</td>
+                <td>' . $namaGedung . '</td>
+                <td>' . $tanggal . '</td>
+                <td>' . $jamMulai . ' - ' . $jamSelesai . '</td>
+                <td>' . $keperluan . '</td>
+                <td>' . $jumlahPeserta . ' orang</td>
+                <td><span class="status-badge ' . $statusKelas . '">' . $statusLabel . '</span></td>
+                <td>' . $kolomAksi . '</td>
+            </tr>';
+    }
+}
 
-            <?php foreach ($daftar as $p): ?>
-                <tr>
-                    <td><?= aman($p["nama_lengkap"]) ?></td>
-                    <td><?= aman($p["nama_ruangan"]) ?></td>
-                    <td><?= aman($p["nama_gedung"]) ?></td>
-                    <td><?= aman($p["tanggal"]) ?></td>
-                    <td>
-                        <?= aman(substr($p["jam_mulai"], 0, 5)) ?>
-                        -
-                        <?= aman(substr($p["jam_selesai"], 0, 5)) ?>
-                    </td>
-                    <td><?= aman($p["keperluan"]) ?></td>
-                    <td><?= (int)$p["jumlah_peserta"] ?></td>
-                    <td>
-                        <span class="status-badge <?= aman($p["status_peminjaman"]) ?>">
-                            <?= aman(ucfirst($p["status_peminjaman"])) ?>
-                        </span>
-                    </td>
-                    <td>
-                        <?php if ($p["status_peminjaman"] === "pending"): ?>
-                            <form method="post"
-                                  action="admin_peminjaman.php">
+// Muat template HTML
+$html = file_get_contents(__DIR__ . "/admin_peminjaman.xhtml");
 
-                                <input type="hidden"
-                                       name="csrf_token"
-                                       value="<?= aman($_SESSION["csrf_token"]) ?>" />
+if ($html === false) {
+    http_response_code(500);
+    exit("Template admin peminjaman tidak ditemukan.");
+}
 
-                                <input type="hidden"
-                                       name="id_peminjaman"
-                                       value="<?= (int)$p["id_peminjaman"] ?>" />
+// Tampilkan atau hapus blok pesan notifikasi
+if ($pesan !== "") {
+    $html = str_replace(["<!-- PESAN_START -->", "<!-- PESAN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- PESAN_START -->.*?<!-- PESAN_END -->/s', "", $html);
+}
 
-                                <textarea name="catatan_admin"
-                                          rows="2" cols="20"
-                                          maxlength="1000"
-                                          placeholder="Catatan admin"></textarea>
+// Isi placeholder ke template HTML
+$html = strtr($html, [
+    "{{CSRF_TOKEN}}" => $csrfToken,
+    "{{PESAN}}" => aman($pesan),
+    "{{KELAS_PESAN}}" => $tipePesan === "error" ? "error" : "",
+    "{{AKTIF_SEMUA}}" => $filterAktif === "semua" ? "aktif" : "",
+    "{{AKTIF_PENDING}}" => $filterAktif === "pending" ? "aktif" : "",
+    "{{AKTIF_APPROVED}}" => $filterAktif === "approved" ? "aktif" : "",
+    "{{AKTIF_REJECTED}}" => $filterAktif === "rejected" ? "aktif" : "",
+    "{{AKTIF_CANCELLED}}" => $filterAktif === "cancelled" ? "aktif" : "",
+    "{{JML_SEMUA}}" => (string)$jumlahStatus["semua"],
+    "{{JML_PENDING}}" => (string)$jumlahStatus["pending"],
+    "{{JML_APPROVED}}" => (string)$jumlahStatus["approved"],
+    "{{JML_REJECTED}}" => (string)$jumlahStatus["rejected"],
+    "{{JML_CANCELLED}}" => (string)$jumlahStatus["cancelled"],
+    "{{DAFTAR_BARIS}}" => $barisTabelHtml
+]);
 
-                                <p style="margin: 6px 0 0 0;">
-                                    <button class="aksi-btn setuju"
-                                            type="submit"
-                                            name="aksi"
-                                            value="approved">
-                                        Setujui
-                                    </button>
-
-                                    <button class="aksi-btn tolak"
-                                            type="submit"
-                                            name="aksi"
-                                            value="rejected">
-                                        Tolak
-                                    </button>
-                                </p>
-                            </form>
-                        <?php else: ?>
-                            <?= aman($p["catatan_admin"] ?: "-") ?>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<script src="JS/konfirmasi.js"></script>
-</body>
-</html>
+echo $html;
