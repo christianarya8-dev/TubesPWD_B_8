@@ -46,19 +46,23 @@ document.addEventListener("DOMContentLoaded", function () {
         return null;
     }
 
-    // Update batas maksimal peserta saat ruangan dipilih
-    if (selectRuangan && inputPeserta) {
-        selectRuangan.addEventListener("change", function () {
-            const maks = ambilMaksKapasitas();
-            if (maks) {
-                inputPeserta.setAttribute("max", maks);
-                infoKapasitas.textContent = "Kapasitas maksimal ruangan ini: " + maks + " orang.";
-            } else {
-                inputPeserta.removeAttribute("max");
-                infoKapasitas.textContent = "";
-            }
-        });
+    function perbaruiInfoKapasitas() {
+        if (!inputPeserta || !infoKapasitas) return;
+        const maks = ambilMaksKapasitas();
+        if (maks) {
+            inputPeserta.setAttribute("max", maks);
+            infoKapasitas.textContent = "Kapasitas maksimal ruangan ini: " + maks + " orang.";
+        } else {
+            inputPeserta.removeAttribute("max");
+            infoKapasitas.textContent = "";
+        }
     }
+
+    if (selectRuangan) {
+        selectRuangan.addEventListener("change", perbaruiInfoKapasitas);
+    }
+    // Jalankan juga saat halaman pertama kali dibuka (pinjam & edit)
+    perbaruiInfoKapasitas();
 
     // Hitung durasi peminjaman secara real-time
     function hitungDurasi() {
@@ -85,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (inputMulai) inputMulai.addEventListener("change", hitungDurasi);
     if (inputSelesai) inputSelesai.addEventListener("change", hitungDurasi);
+    hitungDurasi();
 
     // Validasi saat tombol submit ditekan
     form.addEventListener("submit", function (event) {

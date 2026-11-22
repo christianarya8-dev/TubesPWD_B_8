@@ -18,6 +18,14 @@ function aman($nilai) {
 $pesan = "";
 $berhasil = false;
 
+// Nilai awal form agar tidak hilang jika submit gagal
+$idRuanganLama = "";
+$tanggalLama = "";
+$mulaiLama = "";
+$selesaiLama = "";
+$keperluanLama = "";
+$pesertaLama = "";
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $token = $_POST["csrf_token"] ?? "";
 
@@ -37,6 +45,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $peserta = filter_input(
         INPUT_POST, "jumlah_peserta", FILTER_VALIDATE_INT
     );
+
+    // Simpan nilai input sementara
+    $idRuanganLama = (string)($_POST["id_ruangan"] ?? "");
+    $tanggalLama = $tanggal;
+    $mulaiLama = $mulai;
+    $selesaiLama = $selesai;
+    $keperluanLama = $keperluan;
+    $pesertaLama = (string)($_POST["jumlah_peserta"] ?? "");
 
     $awal = DateTimeImmutable::createFromFormat(
         "!Y-m-d", $tanggal
@@ -63,8 +79,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         try {
             $koneksi->beginTransaction();
 
-            // Kunci baris ruangan agar peminjaman
-            // bersamaan diperiksa secara berurutan.
             $cekRuang = $koneksi->prepare(
                 "SELECT kapasitas, status_ruangan
                  FROM ruangan
@@ -82,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($peserta > (int)$ruang["kapasitas"]) {
                 throw new RuntimeException(
-                    "Jumlah peserta melebihi kapasitas ruangan."
+                    "Jumlah peserta (" . $peserta . " orang) melebihi kapasitas ruangan (" . (int)$ruang["kapasitas"] . " orang)."
                 );
             }
 
@@ -121,7 +135,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $koneksi->commit();
             $berhasil = true;
-            $pesan = "Pengajuan berhasil! Menunggu persetujuan admin.";
+            $pesan = "Pengajuan berhasil untuk " . $peserta . " peserta! Menunggu persetujuan admin.";
+
+            // Kosongkan form setelah berhasil tersimpan
+            $idRuanganLama = "";
+            $tanggalLama = "";
+            $mulaiLama = "";
+            $selesaiLama = "";
+            $keperluanLama = "";
+            $pesertaLama = "";
 
         } catch (RuntimeException $e) {
             if ($koneksi->inTransaction()) {
@@ -186,6 +208,19 @@ $ruangan = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
             border: none;
             cursor: pointer;
         }
+        .pesan {
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .pesan.sukses {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .pesan.error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
     </style>
 </head>
 <body>
@@ -194,7 +229,9 @@ $ruangan = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     <h1>Form Peminjaman Ruangan</h1>
 
     <?php if ($pesan !== ""): ?>
-        <p><?= aman($pesan) ?></p>
+        <p class="pesan <?= $berhasil ? 'sukses' : 'error' ?>">
+            <?= aman($pesan) ?>
+        </p>
     <?php endif; ?>
 
     <form method="post" action="pinjam_ruangan.php">
@@ -208,7 +245,8 @@ $ruangan = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
             <option value="">-- Pilih Ruangan --</option>
 
             <?php foreach ($ruangan as $r): ?>
-                <option value="<?= (int)$r["id_ruangan"] ?>">
+                <option value="<?= (int)$r["id_ruangan"] ?>"
+                    <?= ((string)$r["id_ruangan"] === $idRuanganLama) ? 'selected="selected"' : '' ?>>
                     <?= aman($r["nama_ruangan"]) ?>
                     - <?= aman($r["nama_gedung"]) ?>
                     (<?= (int)$r["kapasitas"] ?> orang)
@@ -219,32 +257,39 @@ $ruangan = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         <label for="tanggal">Tanggal Peminjaman</label>
         <input type="date" id="tanggal" name="tanggal"
                min="<?= date("Y-m-d") ?>"
+               value="<?= aman($tanggalLama) ?>"
                required="required" />
 
         <label for="mulai">Jam Mulai</label>
         <input type="time" id="mulai" name="jam_mulai"
+               value="<?= aman($mulaiLama) ?>"
                required="required" />
 
         <label for="selesai">Jam Selesai</label>
         <input type="time" id="selesai" name="jam_selesai"
+               value="<?= aman($selesaiLama) ?>"
                required="required" />
 
         <label for="keperluan">Keperluan</label>
         <textarea id="keperluan" name="keperluan"
                   rows="3" cols="40"
                   maxlength="255"
-                  required="required"></textarea>
+                  required="required"><?= aman($keperluanLama) ?></textarea>
 
         <label for="peserta">Jumlah Peserta</label>
         <input type="number" id="peserta"
                name="jumlah_peserta" min="1"
+               value="<?= aman($pesertaLama) ?>"
                required="required" />
 
         <button type="submit">Ajukan Peminjaman</button>
     </form>
 
-    <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
+    <p>
+        <a href="dashboard.php">Kembali ke Dashboard</a> |
+        <a href="riwayat_peminjaman.php">Lihat Riwayat Peminjaman</a>
+    </p>
 </div>
-<script src="js/index.js"></script>
+<script src="JS/index.js"></script>
 </body>
 </html>
