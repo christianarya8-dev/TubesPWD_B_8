@@ -44,150 +44,71 @@ $sql = "SELECT
         ORDER BY r.id_ruangan";
 
 $query = $koneksi->query($sql);
-$data_ruangan = $query->fetchAll(PDO::FETCH_ASSOC);
-?>
+$dataRuangan = $query->fetchAll(PDO::FETCH_ASSOC);
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Daftar Ruangan - CampusSpace</title>
-    <meta charset="UTF-8" />
+$csrfToken = $admin ? aman($_SESSION["csrf_token"]) : "";
+$kolomHeaderAdmin = $admin ? "<th>Aksi</th>" : "";
 
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 30px;
+// Susun baris tabel ruangan
+$barisTabelHtml = "";
+
+if (empty($dataRuangan)) {
+    $colspan = $admin ? 5 : 4;
+    $barisTabelHtml = '<tr><td colspan="' . $colspan . '">Belum ada ruangan tersedia.</td></tr>';
+} else {
+    foreach ($dataRuangan as $ruangan) {
+        $idRuangan = (int)$ruangan["id_ruangan"];
+        $kodeRuangan = aman($ruangan["kode_ruangan"]);
+        $namaRuangan = aman($ruangan["nama_ruangan"]);
+        $namaGedung = aman($ruangan["nama_gedung"]);
+        $kapasitas = (int)$ruangan["kapasitas"];
+
+        $kolomAksiAdmin = "";
+        if ($admin) {
+            $kolomAksiAdmin = '
+                <td class="kolom-aksi">
+                    <a href="edit_ruangan.php?id=' . $idRuangan . '" class="btn-edit">Edit</a>
+                    <form method="post"
+                          action="hapus_ruangan.php"
+                          class="form-hapus"
+                          onsubmit="return confirm(\'Yakin ingin menonaktifkan ruangan ini?\');">
+                        <input type="hidden" name="csrf_token" value="' . $csrfToken . '" />
+                        <input type="hidden" name="id" value="' . $idRuangan . '" />
+                        <button type="submit" class="btn-hapus">Hapus</button>
+                    </form>
+                </td>';
         }
 
-        h1 {
-            color: #243b53;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #cccccc;
-            text-align: left;
-        }
-
-        th {
-            background-color: #243b53;
-            color: white;
-        }
-
-        a {
-            color: #2563eb;
-            margin-right: 10px;
-        }
-
-        button {
-            background: #b91c1c;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-
-        .navigasi {
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <h1>Daftar Ruangan CampusSpace</h1>
-
-    <p>Data berikut diambil langsung dari database MySQL.</p>
-
-    <div class="navigasi">
-        <a href="dashboard.php">Kembali ke Dashboard</a>
-
-        <?php if ($admin): ?>
-            <a href="tambah_ruangan.php">
-                + Tambah Ruangan
-            </a>
-        <?php endif; ?>
-    </div>
-
-    <table>
-        <thead>
+        $barisTabelHtml .= '
             <tr>
-                <th>Kode</th>
-                <th>Nama Ruangan</th>
-                <th>Gedung</th>
-                <th>Kapasitas</th>
+                <td>' . $kodeRuangan . '</td>
+                <td>' . $namaRuangan . '</td>
+                <td>' . $namaGedung . '</td>
+                <td>' . $kapasitas . ' orang</td>
+                ' . $kolomAksiAdmin . '
+            </tr>';
+    }
+}
 
-                <?php if ($admin): ?>
-                    <th>Aksi</th>
-                <?php endif; ?>
-            </tr>
-        </thead>
+// Muat template HTML
+$html = file_get_contents(__DIR__ . "/daftar_ruangan.xhtml");
 
-        <tbody>
-            <?php if (empty($data_ruangan)): ?>
-                <tr>
-                    <td colspan="<?= $admin ? 5 : 4 ?>">
-                        Belum ada ruangan tersedia.
-                    </td>
-                </tr>
-            <?php endif; ?>
+if ($html === false) {
+    http_response_code(500);
+    exit("Template daftar ruangan tidak ditemukan.");
+}
 
-            <?php foreach ($data_ruangan as $ruangan): ?>
-                <tr>
-                    <td>
-                        <?= aman($ruangan["kode_ruangan"]) ?>
-                    </td>
+// Tampilkan atau sembunyikan tombol + Tambah Ruangan khusus admin
+if ($admin) {
+    $html = str_replace(["<!-- ADMIN_START -->", "<!-- ADMIN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- ADMIN_START -->.*?<!-- ADMIN_END -->/s', "", $html);
+}
 
-                    <td>
-                        <?= aman($ruangan["nama_ruangan"]) ?>
-                    </td>
+// Isi placeholder ke template HTML
+$html = strtr($html, [
+    "{{KOLOM_HEADER_ADMIN}}" => $kolomHeaderAdmin,
+    "{{DAFTAR_BARIS}}" => $barisTabelHtml
+]);
 
-                    <td>
-                        <?= aman($ruangan["nama_gedung"]) ?>
-                    </td>
-
-                    <td>
-                        <?= (int)$ruangan["kapasitas"] ?> orang
-                    </td>
-
-                    <?php if ($admin): ?>
-                    <td>
-                        <a href="edit_ruangan.php?id=<?= (int)$ruangan['id_ruangan'] ?>">
-                            Edit
-                        </a>
-
-                        <form method="post"
-                              action="hapus_ruangan.php"
-                              style="display:inline;"
-                              onsubmit="return confirm('Yakin ingin menonaktifkan ruangan ini?');">
-
-                            <input type="hidden"
-                                   name="csrf_token"
-                                   value="<?= aman($_SESSION["csrf_token"]) ?>" />
-
-                            <input type="hidden"
-                                   name="id"
-                                   value="<?= (int)$ruangan['id_ruangan'] ?>" />
-
-                            <button type="submit">
-                                Hapus
-                            </button>
-                        </form>
-                    </td>
-                    <?php endif; ?>
-
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-
-<script src="js/ruangan.js"></script>
-</body>
-</html>
+echo $html;

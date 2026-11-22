@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Daftar Ruangan - CampusSpace</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="CSS/daftar_ruangan.css" />
+</head>
+
+<body>
+<div class="wadah">
+    <h1>Daftar Ruangan CampusSpace</h1>
+
+    <p class="subjudul">Data berikut diambil langsung dari database MySQL.</p>
+
+    <div class="navigasi">
+        <a href="dashboard.php" class="btn-nav">Kembali ke Dashboard</a>
+
+        <!-- ADMIN_START -->
+        <a href="tambah_ruangan.php" class="btn-tambah">+ Tambah Ruangan</a>
+        <!-- ADMIN_END -->
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Kode</th>
+                <th>Nama Ruangan</th>
+                <th>Gedung</th>
+                <th>Kapasitas</th>
+                {{KOLOM_HEADER_ADMIN}}
+            </tr>
+        </thead>
+
+        <tbody>
+            {{DAFTAR_BARIS}}
+        </tbody>
+    </table>
+</div>
+
+<script src="JS/ruangan.js"></script>
+</body>
+</html>
