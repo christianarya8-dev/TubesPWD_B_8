@@ -22,7 +22,11 @@ $idPeminjaman = filter_input(
     FILTER_VALIDATE_INT
 );
 
-if (!$idPeminjaman || $idPeminjaman < 1) {
+if (!$idPeminjaman) {
+    exit("ID peminjaman tidak valid.");
+}
+
+if ($idPeminjaman < 1) {
     exit("ID peminjaman tidak valid.");
 }
 
@@ -48,11 +52,22 @@ if ($peminjaman["status_peminjaman"] !== "pending") {
     exit("Hanya peminjaman pending yang dapat diedit.");
 }
 
+// Nilai awal form diambil dari database
+$tanggalForm = $peminjaman["tanggal"];
+$mulaiForm = substr($peminjaman["jam_mulai"], 0, 5);
+$selesaiForm = substr($peminjaman["jam_selesai"], 0, 5);
+$keperluanForm = $peminjaman["keperluan"];
+$pesertaForm = (string)(int)$peminjaman["jumlah_peserta"];
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $token = $_POST["csrf_token"] ?? "";
 
-    if (!is_string($token) ||
-        !hash_equals($_SESSION["csrf_token"], $token)) {
+    if (!is_string($token)) {
+        http_response_code(403);
+        exit("Permintaan tidak valid.");
+    }
+
+    if (!hash_equals($_SESSION["csrf_token"], $token)) {
         http_response_code(403);
         exit("Permintaan tidak valid.");
     }
@@ -68,6 +83,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         FILTER_VALIDATE_INT
     );
 
+    // Simpan input pengguna agar tidak hilang jika terjadi error
+    $tanggalForm = $tanggal;
+    $mulaiForm = $mulai;
+    $selesaiForm = $selesai;
+    $keperluanForm = $keperluan;
+    $pesertaForm = (string)($_POST["jumlah_peserta"] ?? "");
+
     // Memastikan format tanggal benar
     $tanggalObj = DateTimeImmutable::createFromFormat(
         "!Y-m-d",
@@ -81,25 +103,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $mulai) &&
         preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $selesai);
 
-    if (!$tanggalValid || !$jamValid ||
-        $mulai >= $selesai ||
-        !$peserta || $peserta < 1 ||
-        $keperluan === "" ||
-        strlen($keperluan) > 255) {
-
-        $pesan = "Data yang dimasukkan tidak valid.";
-
+    if (!$tanggalValid) {
+        $pesan = "Format tanggal tidak valid.";
+    } elseif (!$jamValid) {
+        $pesan = "Format jam tidak valid.";
+    } elseif ($mulai >= $selesai) {
+        $pesan = "Jam selesai harus lebih besar dari jam mulai.";
+    } elseif (!$peserta) {
+        $pesan = "Jumlah peserta tidak valid.";
+    } elseif ($peserta < 1) {
+        $pesan = "Jumlah peserta minimal 1 orang.";
+    } elseif ($keperluan === "") {
+        $pesan = "Keperluan wajib diisi.";
+    } elseif (strlen($keperluan) > 255) {
+        $pesan = "Keperluan maksimal 255 karakter.";
     } elseif ($tanggal < date("Y-m-d")) {
         $pesan = "Tanggal peminjaman tidak boleh di masa lalu.";
-
     } else {
         try {
             $koneksi->beginTransaction();
 
             $idRuangan = (int)$peminjaman["id_ruangan"];
 
-            // Kunci ruangan agar pemeriksaan jadwal
-            // tidak bertabrakan dengan pengajuan lain
+            // Kunci ruangan agar pemeriksaan jadwal tidak bertabrakan
             $cekRuang = $koneksi->prepare(
                 "SELECT kapasitas, status_ruangan
                  FROM ruangan
@@ -109,15 +135,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $cekRuang->execute([$idRuangan]);
             $ruang = $cekRuang->fetch(PDO::FETCH_ASSOC);
 
-            if (!$ruang ||
-                $ruang["status_ruangan"] !== "aktif") {
+            if (!$ruang) {
+                throw new RuntimeException(
+                    "Ruangan tidak ditemukan."
+                );
+            }
+
+            if ($ruang["status_ruangan"] !== "aktif") {
                 throw new RuntimeException(
                     "Ruangan sedang tidak aktif."
                 );
             }
 
-            // Pastikan transaksi masih milik pengguna
-            // dan statusnya belum berubah oleh admin
+            // Pastikan transaksi masih milik pengguna dan berstatus pending
             $cekPeminjaman = $koneksi->prepare(
                 "SELECT status_peminjaman, id_ruangan
                  FROM peminjaman
@@ -131,9 +161,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ]);
             $dataTerbaru = $cekPeminjaman->fetch(PDO::FETCH_ASSOC);
 
-            if (!$dataTerbaru ||
-                $dataTerbaru["status_peminjaman"] !== "pending" ||
-                (int)$dataTerbaru["id_ruangan"] !== $idRuangan) {
+            if (!$dataTerbaru) {
+                throw new RuntimeException(
+                    "Peminjaman tidak ditemukan."
+                );
+            }
+
+            if ($dataTerbaru["status_peminjaman"] !== "pending") {
+                throw new RuntimeException(
+                    "Peminjaman tidak dapat diubah lagi."
+                );
+            }
+
+            if ((int)$dataTerbaru["id_ruangan"] !== $idRuangan) {
                 throw new RuntimeException(
                     "Peminjaman tidak dapat diubah lagi."
                 );
@@ -141,7 +181,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($peserta > (int)$ruang["kapasitas"]) {
                 throw new RuntimeException(
-                    "Jumlah peserta melebihi kapasitas."
+                    "Jumlah peserta melebihi kapasitas ruangan (" . (int)$ruang["kapasitas"] . " orang)."
                 );
             }
 
@@ -215,128 +255,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
-?>
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Edit Peminjaman - CampusSpace</title>
-    <meta charset="UTF-8" />
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 40px 15px;
-        }
+// Muat template HTML
+$html = file_get_contents(__DIR__ . "/edit_peminjaman.xhtml");
 
-        .kotak {
-            max-width: 520px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-        }
+if ($html === false) {
+    http_response_code(500);
+    exit("Template edit peminjaman tidak ditemukan.");
+}
 
-        h1 { color: #243b53; }
+// Tampilkan atau hapus blok pesan error
+if ($pesan !== "") {
+    $html = str_replace(["<!-- PESAN_START -->", "<!-- PESAN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- PESAN_START -->.*?<!-- PESAN_END -->/s', "", $html);
+}
 
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
+// Isi placeholder ke template HTML
+$html = strtr($html, [
+    "{{ID_PEMINJAMAN}}" => (string)(int)$idPeminjaman,
+    "{{NAMA_RUANGAN}}" => aman($peminjaman["nama_ruangan"]),
+    "{{KAPASITAS}}" => (string)(int)$peminjaman["kapasitas"],
+    "{{PESAN}}" => aman($pesan),
+    "{{CSRF_TOKEN}}" => aman($_SESSION["csrf_token"]),
+    "{{TANGGAL_MIN}}" => date("Y-m-d"),
+    "{{TANGGAL}}" => aman($tanggalForm),
+    "{{JAM_MULAI}}" => aman($mulaiForm),
+    "{{JAM_SELESAI}}" => aman($selesaiForm),
+    "{{KEPERLUAN}}" => aman($keperluanForm),
+    "{{JUMLAH_PESERTA}}" => aman($pesertaForm)
+]);
 
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 6px;
-            box-sizing: border-box;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 12px 18px;
-            background: #243b53;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .error { color: #b91c1c; }
-    </style>
-</head>
-<body>
-<div class="kotak">
-    <h1>Edit Peminjaman</h1>
-
-    <p>
-        <strong>Ruangan:</strong>
-        <?= aman($peminjaman["nama_ruangan"]) ?>
-    </p>
-
-    <p>
-        <strong>Kapasitas:</strong>
-        <?= (int)$peminjaman["kapasitas"] ?> orang
-    </p>
-
-    <?php if ($pesan !== ""): ?>
-        <p class="error"><?= aman($pesan) ?></p>
-    <?php endif; ?>
-
-    <form method="post"
-          action="edit_peminjaman.php?id=<?= (int)$idPeminjaman ?>">
-
-        <input type="hidden"
-               name="csrf_token"
-               value="<?= aman($_SESSION["csrf_token"]) ?>" />
-
-        <label for="tanggal">Tanggal Peminjaman</label>
-        <input type="date"
-               id="tanggal"
-               name="tanggal"
-               min="<?= date("Y-m-d") ?>"
-               value="<?= aman($peminjaman["tanggal"]) ?>"
-               required="required" />
-
-        <label for="mulai">Jam Mulai</label>
-        <input type="time"
-               id="mulai"
-               name="jam_mulai"
-               value="<?= aman(substr($peminjaman["jam_mulai"], 0, 5)) ?>"
-               required="required" />
-
-        <label for="selesai">Jam Selesai</label>
-        <input type="time"
-               id="selesai"
-               name="jam_selesai"
-               value="<?= aman(substr($peminjaman["jam_selesai"], 0, 5)) ?>"
-               required="required" />
-
-        <label for="keperluan">Keperluan</label>
-        <textarea id="keperluan"
-                  name="keperluan"
-                  rows="3"
-                  cols="40"
-                  maxlength="255"
-                  required="required"><?= aman($peminjaman["keperluan"]) ?></textarea>
-
-        <label for="peserta">Jumlah Peserta</label>
-        <input type="number"
-               id="peserta"
-               name="jumlah_peserta"
-               min="1"
-               max="<?= (int)$peminjaman["kapasitas"] ?>"
-               value="<?= (int)$peminjaman["jumlah_peserta"] ?>"
-               required="required" />
-
-        <button type="submit">Simpan Perubahan</button>
-    </form>
-
-    <p>
-        <a href="riwayat_peminjaman.php">
-            Kembali ke Riwayat
-        </a>
-    </p>
-</div>
-<script src="js/index.js"></script>
-</body>
-</html>
+echo $html;
