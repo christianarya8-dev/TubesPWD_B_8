@@ -86,124 +86,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
-?>
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Registrasi - CampusSpace</title>
-    <meta charset="UTF-8" />
+// Muat template HTML
+$html = file_get_contents(__DIR__ . "/register.html");
 
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 40px 15px;
-        }
+if ($html === false) {
+    http_response_code(500);
+    exit("Template registrasi tidak ditemukan.");
+}
 
-        .kotak {
-            max-width: 420px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-        }
+// Tampilkan atau hapus blok pesan error
+if ($pesan !== "") {
+    $html = str_replace(["<!-- PESAN_START -->", "<!-- PESAN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- PESAN_START -->.*?<!-- PESAN_END -->/s', "", $html);
+}
 
-        h1 {
-            color: #243b53;
-            text-align: center;
-        }
+// Isi placeholder dengan data yang sudah diamankan
+$html = strtr($html, [
+    "{{PESAN}}" => aman($pesan),
+    "{{CSRF_TOKEN}}" => aman($_SESSION["csrf_token"]),
+    "{{NAMA_LAMA}}" => aman($nama),
+    "{{EMAIL_LAMA}}" => aman($email)
+]);
 
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-
-        input {
-            width: 100%;
-            padding: 11px;
-            margin-top: 6px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 22px;
-            background: #243b53;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .pesan {
-            color: #b42318;
-        }
-
-        .bawah {
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-
-<body>
-<div class="kotak">
-
-    <h1>CampusSpace</h1>
-    <h2>Daftar Akun Mahasiswa</h2>
-
-    <?php if ($pesan !== ""): ?>
-        <p class="pesan"><?= aman($pesan) ?></p>
-    <?php endif; ?>
-
-    <form action="register.php" method="post">
-
-        <input type="hidden"
-               name="csrf_token"
-               value="<?= aman($_SESSION["csrf_token"]) ?>" />
-
-        <label for="nama">Nama Lengkap</label>
-        <input type="text"
-               id="nama"
-               name="nama_lengkap"
-               maxlength="100"
-               value="<?= aman($nama) ?>"
-               required="required" />
-
-        <label for="email">Email</label>
-        <input type="email"
-               id="email"
-               name="email"
-               maxlength="150"
-               value="<?= aman($email) ?>"
-               required="required" />
-
-        <label for="sandi">Password</label>
-        <input type="password"
-               id="sandi"
-               name="kata_sandi"
-               minlength="8"
-               required="required" />
-
-        <label for="konfirmasi">Konfirmasi Password</label>
-        <input type="password"
-               id="konfirmasi"
-               name="konfirmasi_sandi"
-               minlength="8"
-               required="required" />
-
-        <button type="submit">Daftar Sekarang</button>
-    </form>
-
-    <p class="bawah">
-        Sudah punya akun?
-        <a href="login.php">Login</a>
-    </p>
-
-</div>
-<script src="js/auth.js"></script>
-</body>
-</html>
+echo $html;
