@@ -1,0 +1,102 @@
+body {
+    background: #f4f6f9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 40px 15px;
+    color: #1f2933;
+}
+
+.kotak {
+    max-width: 500px;
+    margin: auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+h1 {
+    color: #243b53;
+    margin-top: 0;
+}
+
+.info-akun {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+}
+
+.info-akun p {
+    margin: 6px 0;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #243b53;
+}
+
+button {
+    background: #243b53;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin-top: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #334e68;
+}
+
+.notifikasi {
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.pesan {
+    background: #dcfce7;
+    color: #167347;
+    border-left: 4px solid #167347;
+}
+
+.error {
+    background: #fee2e2;
+    color: #b42318;
+    border-left: 4px solid #b42318;
+}
+
+.bawah {
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+.bawah a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.bawah a:hover {
+    text-decoration: underline;
+}
