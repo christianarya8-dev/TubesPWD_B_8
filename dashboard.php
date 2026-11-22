@@ -14,64 +14,29 @@ function aman($teks) {
     return htmlspecialchars((string)$teks, ENT_QUOTES, "UTF-8");
 }
 
-$nama = aman($_SESSION["nama_lengkap"]);
-?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Dashboard - CampusSpace</title>
-    <meta charset="UTF-8" />
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 40px;
-        }
-        .kotak {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 650px;
-        }
-        a { margin-right: 15px; }
-        button {
-            margin-top: 20px;
-            padding: 10px 15px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-<div class="kotak">
-    <h1>Dashboard CampusSpace</h1>
+$nama = aman($_SESSION["nama_lengkap"] ?? "");
+$csrfToken = aman($_SESSION["csrf_token"]);
+$isAdmin = (($_SESSION["peran"] ?? "") === "admin");
 
-    <h2>Selamat datang, <?= $nama ?>!</h2>
+// Muat template HTML
+$html = file_get_contents(__DIR__ . "/dashboard.xhtml");
 
-    <p>Kamu berhasil login ke sistem
-       peminjaman ruangan kampus.</p>
+if ($html === false) {
+    http_response_code(500);
+    exit("Template dashboard tidak ditemukan.");
+}
 
-    <p>
-        <a href="daftar_ruangan.php">Lihat Ruangan</a>
-        <a href="profil.php">Profil Saya</a>
-        <a href="pinjam_ruangan.php">Pinjam Ruangan</a>
-        <a href="riwayat_peminjaman.php">Riwayat Peminjaman</a>
+// Tampilkan atau hapus blok Menu Admin sesuai peran pengguna
+if ($isAdmin) {
+    $html = str_replace(["<!-- ADMIN_START -->", "<!-- ADMIN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- ADMIN_START -->.*?<!-- ADMIN_END -->/s', "", $html);
+}
 
-        <?php if (($_SESSION["peran"] ?? "") === "admin"): ?>
-            <a href="admin_peminjaman.php">
-                Kelola Peminjaman (Admin)
-            </a>
-        <?php endif; ?>
+// Isi placeholder dengan data pengguna yang sudah diamankan
+$html = strtr($html, [
+    "{{NAMA_PENGGUNA}}" => $nama,
+    "{{CSRF_TOKEN}}" => $csrfToken
+]);
 
-    </p>
-
-    <form method="post" action="logout.php">
-        <input type="hidden"
-               name="csrf_token"
-               value="<?= aman($_SESSION["csrf_token"]) ?>" />
-
-        <button type="submit">Logout</button>
-    </form>
-</div>
-<script src="js/konfirmasi.js"></script>
-</body>
-</html>
+echo $html;
