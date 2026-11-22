@@ -1,100 +1,153 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
-    margin: 0;
-    padding: 40px 15px;
-    color: #1f2933;
+:root {
+  --primary-dark: #111827;
+  --primary-hover: #1f2937;
+  --bg-app: #f4f6f9;
+  --bg-card: #ffffff;
+  --text-main: #1f2933;
+  --text-secondary: #4b5563;
+  --border-color: #e2e8f0;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-app);
+  margin: 0;
+  padding: 50px 16px;
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* --- KOTAK UTAMA (CARD) --- */
 .kotak {
-    max-width: 500px;
-    margin: auto;
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  background: var(--bg-card);
+  padding: 36px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 h1 {
-    color: #243b53;
-    margin-top: 0;
-    margin-bottom: 10px;
+  color: var(--primary-dark);
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
 }
 
 .subjudul {
-    color: #486581;
-    margin-top: 0;
-    margin-bottom: 16px;
+  color: var(--text-secondary);
+  margin-top: 0;
+  margin-bottom: 22px;
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
+/* --- DETAIL BOX (Informasi Data) --- */
 .detail-box {
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-left: 4px solid #243b53;
-    border-radius: 8px;
-    padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary-dark);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  margin-bottom: 8px;
 }
 
 .detail-box p {
-    margin: 8px 0;
+  margin: 8px 0;
+  font-size: 0.92rem;
+  color: var(--text-main);
 }
 
+/* --- PESAN ERROR --- */
 .pesan-error {
-    padding: 12px 14px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: bold;
-    background: #fee2e2;
-    color: #b91c1c;
-    border-left: 4px solid #b91c1c;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: #fee2e2;
+  color: #991b1b;
+  border-left: 4px solid var(--danger);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
+/* --- GRUP AKSI & TOMBOL --- */
 .grup-aksi {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
 }
 
 .btn-batal-peminjaman,
 .btn-kembali,
 .btn-kembali-penuh {
-    display: inline-block;
-    padding: 11px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  transition: var(--transition-smooth);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  font-family: inherit;
 }
 
 .btn-batal-peminjaman {
-    background: #b91c1c;
-    color: #ffffff;
+  background: var(--danger);
+  color: #ffffff;
+  flex: 1;
 }
 
 .btn-batal-peminjaman:hover {
-    background: #991b1b;
+  background: var(--danger-hover);
+  transform: translateY(-1px);
 }
 
 .btn-kembali {
-    background: #e2e8f0;
-    color: #243b53;
+  background: #f1f5f9;
+  color: var(--primary-dark);
+  border: 1px solid var(--border-color);
+  flex: 1;
 }
 
 .btn-kembali:hover {
-    background: #cbd5e1;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
 }
 
 .btn-kembali-penuh {
-    width: 100%;
-    box-sizing: border-box;
-    background: #243b53;
-    color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--primary-dark);
+  color: #ffffff;
 }
 
 .btn-kembali-penuh:hover {
-    background: #334e68;
+  background: var(--primary-hover);
+  transform: translateY(-1px);
 }
