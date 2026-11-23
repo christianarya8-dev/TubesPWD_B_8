@@ -29,8 +29,12 @@ $pesertaLama = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $token = $_POST["csrf_token"] ?? "";
 
-    if (!is_string($token) ||
-        !hash_equals($_SESSION["csrf_token"], $token)) {
+    if (!is_string($token)) {
+        http_response_code(403);
+        exit("Permintaan tidak valid.");
+    }
+
+    if (!hash_equals($_SESSION["csrf_token"], $token)) {
         http_response_code(403);
         exit("Permintaan tidak valid.");
     }
@@ -46,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         INPUT_POST, "jumlah_peserta", FILTER_VALIDATE_INT
     );
 
-    // Simpan nilai input sementara
+    // Simpan input sementara
     $idRuanganLama = (string)($_POST["id_ruangan"] ?? "");
     $tanggalLama = $tanggal;
     $mulaiLama = $mulai;
@@ -68,17 +72,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $selesai
     );
 
-    if (!$idRuangan || !$tanggalValid || !$jamValid ||
-        $mulai >= $selesai || !$peserta ||
-        $peserta < 1 || $keperluan === "" ||
-        strlen($keperluan) > 255) {
-        $pesan = "Periksa kembali data peminjaman.";
+    if (!$idRuangan) {
+        $pesan = "Silakan pilih ruangan terlebih dahulu.";
+    } elseif (!$tanggalValid) {
+        $pesan = "Format tanggal tidak valid.";
     } elseif ($tanggal < date("Y-m-d")) {
         $pesan = "Tanggal peminjaman tidak boleh di masa lalu.";
+    } elseif (!$jamValid) {
+        $pesan = "Format jam mulai atau jam selesai tidak valid.";
+    } elseif ($mulai >= $selesai) {
+        $pesan = "Jam selesai harus lebih besar dari jam mulai.";
+    } elseif ($keperluan === "") {
+        $pesan = "Keperluan peminjaman wajib diisi.";
+    } elseif (strlen($keperluan) > 255) {
+        $pesan = "Keperluan maksimal 255 karakter.";
+    } elseif (!$peserta) {
+        $pesan = "Jumlah peserta tidak valid.";
+    } elseif ($peserta < 1) {
+        $pesan = "Jumlah peserta minimal 1 orang.";
     } else {
         try {
             $koneksi->beginTransaction();
 
+            // Kunci baris ruangan agar peminjaman bersamaan diperiksa berurutan
             $cekRuang = $koneksi->prepare(
                 "SELECT kapasitas, status_ruangan
                  FROM ruangan
@@ -88,9 +104,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $cekRuang->execute([$idRuangan]);
             $ruang = $cekRuang->fetch(PDO::FETCH_ASSOC);
 
-            if (!$ruang || $ruang["status_ruangan"] !== "aktif") {
+            if (!$ruang) {
                 throw new RuntimeException(
-                    "Ruangan tidak tersedia."
+                    "Ruangan tidak ditemukan."
+                );
+            }
+
+            if ($ruang["status_ruangan"] !== "aktif") {
+                throw new RuntimeException(
+                    "Ruangan sedang tidak tersedia."
                 );
             }
 
@@ -135,9 +157,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $koneksi->commit();
             $berhasil = true;
-            $pesan = "Pengajuan berhasil untuk " . $peserta . " peserta! Menunggu persetujuan admin.";
+            $pesan = "Pengajuan berhasil! Menunggu persetujuan admin.";
 
-            // Kosongkan form setelah berhasil tersimpan
+            // Kosongkan input setelah berhasil tersimpan
             $idRuanganLama = "";
             $tanggalLama = "";
             $mulaiLama = "";
@@ -169,127 +191,49 @@ $sql = "SELECT r.id_ruangan, r.nama_ruangan,
         WHERE r.status_ruangan = 'aktif'
         ORDER BY g.nama_gedung, r.nama_ruangan";
 
-$ruangan = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Pinjam Ruangan - CampusSpace</title>
-    <meta charset="UTF-8" />
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 40px 15px;
-        }
-        .kotak {
-            max-width: 550px;
-            margin: auto;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        input, select, textarea {
-            width: 100%;
-            margin-top: 6px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        button {
-            margin-top: 20px;
-            padding: 12px 18px;
-            background: #243b53;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .pesan {
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-        .pesan.sukses {
-            background: #dcfce7;
-            color: #15803d;
-        }
-        .pesan.error {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-    </style>
-</head>
-<body>
+$daftarRuangan = $koneksi->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-<div class="kotak">
-    <h1>Form Peminjaman Ruangan</h1>
+// Susun opsi dropdown ruangan
+$opsiRuanganHtml = "";
+foreach ($daftarRuangan as $r) {
+    $idItem = (int)$r["id_ruangan"];
+    $namaRuanganItem = aman($r["nama_ruangan"]);
+    $namaGedungItem = aman($r["nama_gedung"]);
+    $kapasitasItem = (int)$r["kapasitas"];
+    $selectedAttr = ((string)$idItem === $idRuanganLama) ? ' selected="selected"' : "";
 
-    <?php if ($pesan !== ""): ?>
-        <p class="pesan <?= $berhasil ? 'sukses' : 'error' ?>">
-            <?= aman($pesan) ?>
-        </p>
-    <?php endif; ?>
+    $opsiRuanganHtml .= '<option value="' . $idItem . '"' . $selectedAttr . '>'
+        . $namaRuanganItem . " - " . $namaGedungItem . " (" . $kapasitasItem . " orang)"
+        . "</option>\n";
+}
 
-    <form method="post" action="pinjam_ruangan.php">
-        <input type="hidden"
-               name="csrf_token"
-               value="<?= aman($_SESSION["csrf_token"]) ?>" />
+// Muat template HTML
+$html = file_get_contents(__DIR__ . "/pinjam_ruangan.xhtml");
 
-        <label for="ruangan">Pilih Ruangan</label>
-        <select id="ruangan" name="id_ruangan"
-                required="required">
-            <option value="">-- Pilih Ruangan --</option>
+if ($html === false) {
+    http_response_code(500);
+    exit("Template peminjaman ruangan tidak ditemukan.");
+}
 
-            <?php foreach ($ruangan as $r): ?>
-                <option value="<?= (int)$r["id_ruangan"] ?>"
-                    <?= ((string)$r["id_ruangan"] === $idRuanganLama) ? 'selected="selected"' : '' ?>>
-                    <?= aman($r["nama_ruangan"]) ?>
-                    - <?= aman($r["nama_gedung"]) ?>
-                    (<?= (int)$r["kapasitas"] ?> orang)
-                </option>
-            <?php endforeach; ?>
-        </select>
+// Tampilkan atau hapus blok pesan notifikasi
+if ($pesan !== "") {
+    $html = str_replace(["<!-- PESAN_START -->", "<!-- PESAN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- PESAN_START -->.*?<!-- PESAN_END -->/s', "", $html);
+}
 
-        <label for="tanggal">Tanggal Peminjaman</label>
-        <input type="date" id="tanggal" name="tanggal"
-               min="<?= date("Y-m-d") ?>"
-               value="<?= aman($tanggalLama) ?>"
-               required="required" />
+// Isi placeholder ke template HTML
+$html = strtr($html, [
+    "{{PESAN}}" => aman($pesan),
+    "{{KELAS_PESAN}}" => $berhasil ? "sukses" : "error",
+    "{{CSRF_TOKEN}}" => aman($_SESSION["csrf_token"]),
+    "{{OPSI_RUANGAN}}" => $opsiRuanganHtml,
+    "{{TANGGAL_MIN}}" => date("Y-m-d"),
+    "{{TANGGAL_LAMA}}" => aman($tanggalLama),
+    "{{MULAI_LAMA}}" => aman($mulaiLama),
+    "{{SELESAI_LAMA}}" => aman($selesaiLama),
+    "{{KEPERLUAN_LAMA}}" => aman($keperluanLama),
+    "{{PESERTA_LAMA}}" => aman($pesertaLama)
+]);
 
-        <label for="mulai">Jam Mulai</label>
-        <input type="time" id="mulai" name="jam_mulai"
-               value="<?= aman($mulaiLama) ?>"
-               required="required" />
-
-        <label for="selesai">Jam Selesai</label>
-        <input type="time" id="selesai" name="jam_selesai"
-               value="<?= aman($selesaiLama) ?>"
-               required="required" />
-
-        <label for="keperluan">Keperluan</label>
-        <textarea id="keperluan" name="keperluan"
-                  rows="3" cols="40"
-                  maxlength="255"
-                  required="required"><?= aman($keperluanLama) ?></textarea>
-
-        <label for="peserta">Jumlah Peserta</label>
-        <input type="number" id="peserta"
-               name="jumlah_peserta" min="1"
-               value="<?= aman($pesertaLama) ?>"
-               required="required" />
-
-        <button type="submit">Ajukan Peminjaman</button>
-    </form>
-
-    <p>
-        <a href="dashboard.php">Kembali ke Dashboard</a> |
-        <a href="riwayat_peminjaman.php">Lihat Riwayat Peminjaman</a>
-    </p>
-</div>
-<script src="JS/index.js"></script>
-</body>
-</html>
+echo $html;

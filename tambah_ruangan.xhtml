@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Tambah Ruangan - CampusSpace</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="CSS/tambah_ruangan.css" />
+</head>
+<body>
+
+<div class="form-box">
+    <h1>Tambah Ruangan</h1>
+
+    <!-- PESAN_START -->
+    <p class="pesan {{KELAS_PESAN}}">{{PESAN}}</p>
+    <!-- PESAN_END -->
+
+    <form method="post" action="tambah_ruangan.php">
+
+        <input type="hidden"
+               name="csrf_token"
+               value="{{CSRF_TOKEN}}" />
+
+        <label for="id_gedung">Gedung</label>
+        <select name="id_gedung" id="id_gedung" required="required">
+            <option value="">-- Pilih Gedung --</option>
+            {{OPSI_GEDUNG}}
+        </select>
+
+        <label for="kode_ruangan">Kode Ruangan</label>
+        <input type="text"
+               name="kode_ruangan"
+               id="kode_ruangan"
+               value="{{KODE_LAMA}}"
+               required="required" />
+
+        <label for="nama_ruangan">Nama Ruangan</label>
+        <input type="text"
+               name="nama_ruangan"
+               id="nama_ruangan"
+               value="{{NAMA_LAMA}}"
+               required="required" />
+
+        <label for="kapasitas">Kapasitas</label>
+        <input type="number"
+               name="kapasitas"
+               id="kapasitas"
+               min="1"
+               value="{{KAPASITAS_LAMA}}"
+               required="required" />
+
+        <label for="deskripsi">Deskripsi</label>
+        <textarea name="deskripsi"
+                  id="deskripsi"
+                  rows="4"
+                  cols="40">{{DESKRIPSI_LAMA}}</textarea>
+
+        <button type="submit">Simpan Ruangan</button>
+    </form>
+
+    <div class="bawah">
+        <a href="daftar_ruangan.php">Lihat Daftar Ruangan</a>
+        <a href="dashboard.php">Kembali ke Dashboard</a>
+    </div>
+</div>
+
+<script src="JS/ruangan.js"></script>
+</body>
+</html>

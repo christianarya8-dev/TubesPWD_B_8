@@ -1,0 +1,139 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 30px 20px;
+    color: #1f2933;
+}
+
+.wadah {
+    max-width: 1150px;
+    margin: auto;
+}
+
+h1 {
+    color: #243b53;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.navigasi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.navigasi a {
+    text-decoration: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn-kembali {
+    background: #e2e8f0;
+    color: #243b53;
+}
+
+.btn-kembali:hover {
+    background: #cbd5e1;
+}
+
+.btn-tambah {
+    background: #243b53;
+    color: #ffffff;
+}
+
+.btn-tambah:hover {
+    background: #334e68;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #dddddd;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background: #243b53;
+    color: #ffffff;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.pending {
+    background: #fef3c7;
+    color: #a16207;
+}
+
+.approved {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.rejected {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.cancelled {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.grup-aksi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-edit {
+    display: inline-block;
+    background: #2563eb;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 6px 11px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.btn-edit:hover {
+    background: #1d4ed8;
+}
+
+.form-batal {
+    display: inline;
+    margin: 0;
+}
+
+.btn-batal {
+    background: #b91c1c;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 11px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-batal:hover {
+    background: #991b1b;
+}

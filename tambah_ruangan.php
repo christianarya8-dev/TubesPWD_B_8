@@ -1,8 +1,19 @@
 <?php
 require_once __DIR__ . "/config/admin_guard.php";
 
+function aman($teks) {
+    return htmlspecialchars((string)$teks, ENT_QUOTES, "UTF-8");
+}
+
 $pesan = "";
 $berhasil = false;
+
+// Nilai awal form agar tidak hilang jika submit gagal
+$gedungLama = 0;
+$kodeLama = "";
+$namaLama = "";
+$kapasitasLama = "";
+$deskripsiLama = "";
 
 // Mengambil daftar gedung
 $queryGedung = $koneksi->query(
@@ -15,8 +26,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $token = $_POST["csrf_token"] ?? "";
 
-    if (!is_string($token) ||
-        !hash_equals($_SESSION["csrf_token"], $token)) {
+    if (!is_string($token)) {
+        http_response_code(403);
+        exit("Permintaan tidak valid.");
+    }
+
+    if (!hash_equals($_SESSION["csrf_token"], $token)) {
         http_response_code(403);
         exit("Permintaan tidak valid.");
     }
@@ -27,9 +42,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $kapasitas = filter_input(INPUT_POST, "kapasitas", FILTER_VALIDATE_INT);
     $deskripsi = trim($_POST["deskripsi"] ?? "");
 
-    if (!$idGedung || $kode === "" || $nama === "" ||
-        !$kapasitas || $kapasitas < 1) {
-        $pesan = "Data belum lengkap atau tidak valid.";
+    // Simpan input sementara
+    $gedungLama = $idGedung ? (int)$idGedung : 0;
+    $kodeLama = $kode;
+    $namaLama = $nama;
+    $kapasitasLama = (string)($_POST["kapasitas"] ?? "");
+    $deskripsiLama = $deskripsi;
+
+    if (!$idGedung) {
+        $pesan = "Gedung wajib dipilih.";
+    } elseif ($kode === "") {
+        $pesan = "Kode ruangan wajib diisi.";
+    } elseif ($nama === "") {
+        $pesan = "Nama ruangan wajib diisi.";
+    } elseif (!$kapasitas) {
+        $pesan = "Kapasitas ruangan tidak valid.";
+    } elseif ($kapasitas < 1) {
+        $pesan = "Kapasitas ruangan minimal 1 orang.";
     } else {
         try {
             $sql = "INSERT INTO ruangan
@@ -49,6 +78,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $pesan = "Ruangan berhasil ditambahkan!";
             $berhasil = true;
 
+            // Kosongkan input setelah berhasil tersimpan
+            $gedungLama = 0;
+            $kodeLama = "";
+            $namaLama = "";
+            $kapasitasLama = "";
+            $deskripsiLama = "";
+
         } catch (PDOException $e) {
             if ($e->getCode() === "23000") {
                 $pesan = "Kode ruangan sudah digunakan atau gedung tidak valid.";
@@ -60,105 +96,43 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-function aman($teks) {
-    return htmlspecialchars((string)$teks, ENT_QUOTES, "UTF-8");
+// Susun daftar opsi dropdown gedung
+$opsiGedungHtml = "";
+foreach ($daftarGedung as $gedung) {
+    $idGedungItem = (int)$gedung["id_gedung"];
+    $namaGedungItem = aman($gedung["nama_gedung"]);
+    $selectedAttr = ($idGedungItem === $gedungLama) ? ' selected="selected"' : "";
+
+    $opsiGedungHtml .= '<option value="' . $idGedungItem . '"' . $selectedAttr . '>'
+        . $namaGedungItem
+        . "</option>\n";
 }
-?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Tambah Ruangan - CampusSpace</title>
-    <meta charset="UTF-8" />
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 40px;
-        }
-        .form-box {
-            max-width: 500px;
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
-        button {
-            margin-top: 20px;
-            padding: 12px 20px;
-            background: #243b53;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .pesan {
-            margin: 15px 0;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
 
-<div class="form-box">
-    <h1>Tambah Ruangan</h1>
+// Muat template HTML
+$html = file_get_contents(__DIR__ . "/tambah_ruangan.xhtml");
 
-    <?php if ($pesan !== ""): ?>
-        <p class="pesan"><?= aman($pesan) ?></p>
-    <?php endif; ?>
+if ($html === false) {
+    http_response_code(500);
+    exit("Template tambah ruangan tidak ditemukan.");
+}
 
-    <form method="post" action="tambah_ruangan.php">
+// Tampilkan atau hapus blok pesan notifikasi
+if ($pesan !== "") {
+    $html = str_replace(["<!-- PESAN_START -->", "<!-- PESAN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- PESAN_START -->.*?<!-- PESAN_END -->/s', "", $html);
+}
 
-        <input type="hidden"
-            name="csrf_token"
-            value="<?= htmlspecialchars(
-                $_SESSION["csrf_token"],
-                ENT_QUOTES,
-                "UTF-8"
-            ) ?>" />
-            
-        <label for="id_gedung">Gedung</label>
-        <select name="id_gedung" id="id_gedung" required="required">
-            <option value="">-- Pilih Gedung --</option>
-            <?php foreach ($daftarGedung as $gedung): ?>
-                <option value="<?= (int)$gedung['id_gedung'] ?>">
-                    <?= aman($gedung['nama_gedung']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+// Isi placeholder ke template HTML
+$html = strtr($html, [
+    "{{PESAN}}" => aman($pesan),
+    "{{KELAS_PESAN}}" => $berhasil ? "sukses" : "error",
+    "{{CSRF_TOKEN}}" => aman($_SESSION["csrf_token"]),
+    "{{OPSI_GEDUNG}}" => $opsiGedungHtml,
+    "{{KODE_LAMA}}" => aman($kodeLama),
+    "{{NAMA_LAMA}}" => aman($namaLama),
+    "{{KAPASITAS_LAMA}}" => aman($kapasitasLama),
+    "{{DESKRIPSI_LAMA}}" => aman($deskripsiLama)
+]);
 
-        <label for="kode_ruangan">Kode Ruangan</label>
-        <input type="text" name="kode_ruangan"
-               id="kode_ruangan" required="required" />
-
-        <label for="nama_ruangan">Nama Ruangan</label>
-        <input type="text" name="nama_ruangan"
-               id="nama_ruangan" required="required" />
-
-        <label for="kapasitas">Kapasitas</label>
-        <input type="number" name="kapasitas" id="kapasitas"
-               min="1" required="required" />
-
-        <label for="deskripsi">Deskripsi</label>
-        <textarea name="deskripsi" id="deskripsi"
-                  rows="4" cols="40"></textarea>
-
-        <button type="submit">Simpan Ruangan</button>
-    </form>
-
-    <p>
-        <a href="daftar_ruangan.php">Lihat Daftar Ruangan</a>
-    </p>
-</div>
-
-<script src="js/ruangan.js"></script>
-</body>
-</html>
+echo $html;
