@@ -12,141 +12,88 @@ if (empty($_SESSION["csrf_token"])) {
 }
 
 $pesan = "";
+$tipePesan = "error";
+$emailLama = "";
+$peranDipilih = "mahasiswa";
 
-if (isset($_GET["daftar"]) &&
-    $_GET["daftar"] === "berhasil") {
+if (isset($_GET["daftar"]) && $_GET["daftar"] === "berhasil") {
     $pesan = "Registrasi berhasil! Silakan login.";
+    $tipePesan = "sukses";
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
     $token = $_POST["csrf_token"] ?? "";
 
-    if (!is_string($token) ||
-        !hash_equals($_SESSION["csrf_token"], $token)) {
+    if (!is_string($token) || !hash_equals($_SESSION["csrf_token"], $token)) {
         http_response_code(403);
         exit("Permintaan tidak valid.");
     }
 
+    $peranDipilih = $_POST["peran"] ?? "mahasiswa";
     $email = strtolower(trim($_POST["email"] ?? ""));
     $password = $_POST["kata_sandi"] ?? "";
+    $emailLama = $email;
 
-    $stmt = $koneksi->prepare(
-        "SELECT id_pengguna, nama_lengkap,
-                email, kata_sandi, peran
-         FROM pengguna
-         WHERE email = ?
-         LIMIT 1"
-    );
-
-    $stmt->execute([$email]);
-    $pengguna = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($pengguna &&
-        password_verify($password, $pengguna["kata_sandi"])) {
-
-        session_regenerate_id(true);
-
-        $_SESSION["id_pengguna"] =
-            (int)$pengguna["id_pengguna"];
-
-        $_SESSION["nama_lengkap"] =
-            $pengguna["nama_lengkap"];
-
-        $_SESSION["peran"] = $pengguna["peran"];
-
-        $_SESSION["csrf_token"] =
-            bin2hex(random_bytes(32));
-
-        header("Location: dashboard.php");
-        exit;
-
+    if (!in_array($peranDipilih, ["mahasiswa", "admin"], true)) {
+        $pesan = "Pilihan peran tidak valid.";
+        $peranDipilih = "mahasiswa";
+    } elseif ($email === "" || $password === "") {
+        $pesan = "Email dan password wajib diisi.";
     } else {
-        $pesan = "Email atau password salah.";
+        $stmt = $koneksi->prepare(
+            "SELECT id_pengguna, nama_lengkap,
+                    email, kata_sandi, peran
+             FROM pengguna
+             WHERE email = ?
+             LIMIT 1"
+        );
+
+        $stmt->execute([$email]);
+        $pengguna = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$pengguna || !password_verify($password, $pengguna["kata_sandi"])) {
+            $pesan = "Email atau password salah.";
+        } elseif ($peranDipilih === "admin" && $pengguna["peran"] !== "admin") {
+            $pesan = "Akun ini bukan akun Admin. Silakan pilih peran Mahasiswa.";
+        } elseif ($peranDipilih === "mahasiswa" && $pengguna["peran"] !== "mahasiswa") {
+            $pesan = "Akun ini terdaftar sebagai " . ucfirst($pengguna["peran"]) . ". Silakan pilih peran yang sesuai.";
+        } else {
+            session_regenerate_id(true);
+
+            $_SESSION["id_pengguna"] = (int)$pengguna["id_pengguna"];
+            $_SESSION["nama_lengkap"] = $pengguna["nama_lengkap"];
+            $_SESSION["peran"] = $pengguna["peran"];
+            $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+
+            header("Location: dashboard.php");
+            exit;
+        }
     }
 }
-?>
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Login - CampusSpace</title>
-    <meta charset="UTF-8" />
+// Muat template XHTML
+$html = file_get_contents(__DIR__ . "/login.xhtml");
 
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 40px 15px;
-        }
+if ($html === false) {
+    http_response_code(500);
+    exit("Template login tidak ditemukan.");
+}
 
-        .kotak {
-            max-width: 420px;
-            margin: auto;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-        }
+// Tampilkan atau hapus blok pesan notifikasi
+if ($pesan !== "") {
+    $html = str_replace(["<!-- PESAN_START -->", "<!-- PESAN_END -->"], "", $html);
+} else {
+    $html = preg_replace('/<!-- PESAN_START -->.*?<!-- PESAN_END -->/s', "", $html);
+}
 
-        label {
-            display: block;
-            margin-top: 15px;
-        }
+// Isi placeholder ke template XHTML
+$html = strtr($html, [
+    "{{PESAN}}" => aman($pesan),
+    "{{KELAS_PESAN}}" => $tipePesan === "sukses" ? "sukses" : "error",
+    "{{CSRF_TOKEN}}" => aman($_SESSION["csrf_token"]),
+    "{{EMAIL_LAMA}}" => aman($emailLama),
+    "{{CHECKED_MAHASISWA}}" => $peranDipilih === "mahasiswa" ? 'checked="checked"' : "",
+    "{{CHECKED_ADMIN}}" => $peranDipilih === "admin" ? 'checked="checked"' : ""
+]);
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 12px;
-            width: 100%;
-            color: white;
-            background: #243b53;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
-</head>
-
-<body>
-<div class="kotak">
-    <h1>Login CampusSpace</h1>
-
-    <?php if ($pesan !== ""): ?>
-        <p><?= aman($pesan) ?></p>
-    <?php endif; ?>
-
-    <form method="post" action="login.php">
-
-        <input type="hidden"
-               name="csrf_token"
-               value="<?= aman($_SESSION["csrf_token"]) ?>" />
-
-        <label for="email">Email</label>
-        <input type="email"
-               id="email"
-               name="email"
-               required="required" />
-
-        <label for="sandi">Password</label>
-        <input type="password"
-               id="sandi"
-               name="kata_sandi"
-               required="required" />
-
-        <button type="submit">Login</button>
-
-    </form>
-
-    <p>
-        Belum punya akun?
-        <a href="register.php">Daftar di sini</a>
-    </p>
-</div>
-<script src="js/auth.js"></script>
-</body>
-</html>
+echo $html;

@@ -57,17 +57,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         );
 
         try {
+            // Tentukan peran otomatis berdasarkan akhiran email
+            $peranBaru = str_ends_with($email, "@admin.kampus.ac.id")
+                ? "admin"
+                : "mahasiswa";
+
             $sql = "INSERT INTO pengguna
                     (nama_lengkap, email, kata_sandi, peran)
                     VALUES
-                    (:nama, :email, :sandi, 'mahasiswa')";
+                    (:nama, :email, :sandi, :peran)";
 
             $stmt = $koneksi->prepare($sql);
 
             $stmt->execute([
                 ":nama" => $nama,
                 ":email" => $email,
-                ":sandi" => $hash
+                ":sandi" => $hash,
+                ":peran" => $peranBaru
             ]);
 
             $_SESSION["csrf_token"] = bin2hex(random_bytes(32));

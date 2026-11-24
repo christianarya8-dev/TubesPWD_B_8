@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Login - CampusSpace</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="CSS/login.css" />
+</head>
+<body>
+<div class="kotak">
+
+    <h1>CampusSpace</h1>
+    <h2>Masuk ke Sistem Peminjaman Ruangan</h2>
+
+    <!-- PESAN_START -->
+    <p class="pesan {{KELAS_PESAN}}">{{PESAN}}</p>
+    <!-- PESAN_END -->
+
+    <form method="post" action="login.php">
+        <input type="hidden"
+               name="csrf_token"
+               value="{{CSRF_TOKEN}}" />
+
+        <span class="label-peran">Masuk Sebagai</span>
+        <div class="pilih-peran">
+            <label class="opsi-peran">
+                <input type="radio"
+                       name="peran"
+                       value="mahasiswa"
+                       {{CHECKED_MAHASISWA}} />
+                <span>Mahasiswa</span>
+            </label>
+
+            <label class="opsi-peran">
+                <input type="radio"
+                       name="peran"
+                       value="admin"
+                       {{CHECKED_ADMIN}} />
+                <span>Admin</span>
+            </label>
+        </div>
+
+        <label for="email">Email</label>
+        <input type="email"
+               id="email"
+               name="email"
+               value="{{EMAIL_LAMA}}"
+               required="required" />
+
+        <label for="sandi">Password</label>
+        <input type="password"
+               id="sandi"
+               name="kata_sandi"
+               required="required" />
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p class="bawah">
+        Belum punya akun?
+        <a href="register.php">Daftar di sini</a>
+    </p>
+
+</div>
+<script src="JS/auth.js"></script>
+</body>
+</html>
