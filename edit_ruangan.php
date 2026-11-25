@@ -34,6 +34,19 @@ $daftarGedung = $koneksi->query(
      FROM gedung ORDER BY nama_gedung"
 )->fetchAll(PDO::FETCH_ASSOC);
 
+// Mengambil semua master fasilitas
+$daftarFasilitas = $koneksi->query(
+    "SELECT id_fasilitas, nama_fasilitas
+     FROM fasilitas ORDER BY nama_fasilitas"
+)->fetchAll(PDO::FETCH_ASSOC);
+
+// Mengambil daftar ID fasilitas yang sudah dimiliki ruangan ini
+$stmtFasilitasLama = $koneksi->prepare(
+    "SELECT id_fasilitas FROM fasilitas_ruangan WHERE id_ruangan = ?"
+);
+$stmtFasilitasLama->execute([$id]);
+$fasilitasForm = array_map("intval", $stmtFasilitasLama->fetchAll(PDO::FETCH_COLUMN));
+
 // Nilai awal form diambil dari database
 $kodeForm = $ruangan["kode_ruangan"];
 $namaForm = $ruangan["nama_ruangan"];
@@ -66,12 +79,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     );
     $deskripsi = trim($_POST["deskripsi"] ?? "");
 
+    // Ambil dan sanitasi ID fasilitas yang dicentang
+    $fasilitasDipilih = [];
+    if (isset($_POST["fasilitas"]) && is_array($_POST["fasilitas"])) {
+        foreach ($_POST["fasilitas"] as $idFas) {
+            $idFasValid = filter_var($idFas, FILTER_VALIDATE_INT);
+            if ($idFasValid && $idFasValid > 0) {
+                $fasilitasDipilih[] = $idFasValid;
+            }
+        }
+        $fasilitasDipilih = array_values(array_unique($fasilitasDipilih));
+    }
+
     // Simpan input pengguna agar tidak hilang jika terjadi error
     $kodeForm = $kode;
     $namaForm = $nama;
     $gedungForm = $gedung ? (int)$gedung : 0;
     $kapasitasForm = (string)($_POST["kapasitas"] ?? "");
     $deskripsiForm = $deskripsi;
+    $fasilitasForm = $fasilitasDipilih;
 
     if ($kode === "") {
         $pesan = "Kode ruangan wajib diisi.";
@@ -85,6 +111,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $pesan = "Kapasitas ruangan minimal 1 orang.";
     } else {
         try {
+            $koneksi->beginTransaction();
+
+            // 1. Update data utama ruangan
             $sql = "UPDATE ruangan SET
                         nama_ruangan = :nama,
                         kode_ruangan = :kode,
@@ -104,12 +133,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ":id" => $id
             ]);
 
+            // 2. Hapus relasi fasilitas lama ruangan ini
+            $hapusFasilitas = $koneksi->prepare(
+                "DELETE FROM fasilitas_ruangan WHERE id_ruangan = :id"
+            );
+            $hapusFasilitas->execute([":id" => $id]);
+
+            // 3. Simpan ulang relasi fasilitas yang dicentang
+            if (!empty($fasilitasDipilih)) {
+                $simpanFasilitas = $koneksi->prepare(
+                    "INSERT INTO fasilitas_ruangan (id_ruangan, id_fasilitas)
+                     VALUES (:ruangan, :fasilitas)"
+                );
+
+                foreach ($fasilitasDipilih as $idFasItem) {
+                    $simpanFasilitas->execute([
+                        ":ruangan" => $id,
+                        ":fasilitas" => $idFasItem
+                    ]);
+                }
+            }
+
+            $koneksi->commit();
+
             header("Location: daftar_ruangan.php");
             exit;
 
         } catch (PDOException $e) {
+            if ($koneksi->inTransaction()) {
+                $koneksi->rollBack();
+            }
+
             if ($e->getCode() === "23000") {
-                $pesan = "Kode ruangan sudah digunakan atau gedung tidak valid.";
+                $pesan = "Kode ruangan sudah digunakan atau gedung/fasilitas tidak valid.";
             } else {
                 error_log($e->getMessage());
                 $pesan = "Gagal mengubah data ruangan.";
@@ -128,6 +184,23 @@ foreach ($daftarGedung as $item) {
     $opsiGedungHtml .= '<option value="' . $idGedungItem . '"' . $selectedAttr . '>'
         . $namaGedungItem
         . "</option>\n";
+}
+
+// Susun daftar checkbox fasilitas (valid XHTML)
+$daftarFasilitasHtml = "";
+if (empty($daftarFasilitas)) {
+    $daftarFasilitasHtml = '<p class="teks-kosong">Belum ada data fasilitas tersedia.</p>';
+} else {
+    foreach ($daftarFasilitas as $fasilitas) {
+        $idFasItem = (int)$fasilitas["id_fasilitas"];
+        $namaFasItem = aman($fasilitas["nama_fasilitas"]);
+        $checkedAttr = in_array($idFasItem, $fasilitasForm, true) ? ' checked="checked"' : "";
+
+        $daftarFasilitasHtml .= '<label class="item-checkbox">'
+            . '<input type="checkbox" name="fasilitas[]" value="' . $idFasItem . '"' . $checkedAttr . ' /> '
+            . $namaFasItem
+            . "</label>\n";
+    }
 }
 
 // Muat template HTML
@@ -154,7 +227,8 @@ $html = strtr($html, [
     "{{NAMA_RUANGAN}}" => aman($namaForm),
     "{{OPSI_GEDUNG}}" => $opsiGedungHtml,
     "{{KAPASITAS}}" => aman($kapasitasForm),
-    "{{DESKRIPSI}}" => aman($deskripsiForm)
+    "{{DESKRIPSI}}" => aman($deskripsiForm),
+    "{{DAFTAR_FASILITAS}}" => $daftarFasilitasHtml
 ]);
 
 echo $html;

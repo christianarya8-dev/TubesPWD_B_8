@@ -30,30 +30,44 @@ if ($admin && empty($_SESSION["csrf_token"])) {
     $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
 }
 
-// Mengambil daftar ruangan aktif beserta gedung
+// Mengambil daftar ruangan aktif beserta gedung dan fasilitas
 $sql = "SELECT
             r.id_ruangan,
             r.kode_ruangan,
             r.nama_ruangan,
             r.kapasitas,
-            g.nama_gedung
+            g.nama_gedung,
+            COALESCE(
+                GROUP_CONCAT(f.nama_fasilitas ORDER BY f.nama_fasilitas SEPARATOR ', '),
+                '-'
+            ) AS daftar_fasilitas
         FROM ruangan r
         INNER JOIN gedung g
             ON r.id_gedung = g.id_gedung
+        LEFT JOIN fasilitas_ruangan fr
+            ON r.id_ruangan = fr.id_ruangan
+        LEFT JOIN fasilitas f
+            ON fr.id_fasilitas = f.id_fasilitas
         WHERE r.status_ruangan = 'aktif'
-        ORDER BY r.id_ruangan";
+        GROUP BY
+            r.id_ruangan,
+            r.kode_ruangan,
+            r.nama_ruangan,
+            r.kapasitas,
+            g.nama_gedung
+        ORDER BY r.id_ruangan ASC";
 
 $query = $koneksi->query($sql);
 $dataRuangan = $query->fetchAll(PDO::FETCH_ASSOC);
 
 $csrfToken = $admin ? aman($_SESSION["csrf_token"]) : "";
-$kolomHeaderAdmin = $admin ? "<th>Aksi</th>" : "";
+$kolomHeaderAdmin = $admin ? "<th>Fasilitas</th>" : "";
 
 // Susun baris tabel ruangan
 $barisTabelHtml = "";
 
 if (empty($dataRuangan)) {
-    $colspan = $admin ? 5 : 4;
+    $colspan = $admin ? 6 : 5;
     $barisTabelHtml = '<tr><td colspan="' . $colspan . '">Belum ada ruangan tersedia.</td></tr>';
 } else {
     foreach ($dataRuangan as $ruangan) {
@@ -62,6 +76,7 @@ if (empty($dataRuangan)) {
         $namaRuangan = aman($ruangan["nama_ruangan"]);
         $namaGedung = aman($ruangan["nama_gedung"]);
         $kapasitas = (int)$ruangan["kapasitas"];
+        $daftarFasilitas = aman($ruangan["daftar_fasilitas"]);
 
         $kolomAksiAdmin = "";
         if ($admin) {
@@ -85,6 +100,7 @@ if (empty($dataRuangan)) {
                 <td>' . $namaRuangan . '</td>
                 <td>' . $namaGedung . '</td>
                 <td>' . $kapasitas . ' orang</td>
+                <td>' . $daftarFasilitas . '</td>
                 ' . $kolomAksiAdmin . '
             </tr>';
     }
