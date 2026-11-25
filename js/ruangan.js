@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const tabelRuangan = document.querySelector("table");
 
     // BAGIAN A: Tambahkan kotak pencarian live di halaman daftar_ruangan.php
-    if (tabelRuangan && window.location.pathname.includes("daftar_ruangan.php")) {
+    if (tabelRuangan && window.location.pathname.includes("daftar_ruangan.php") && !document.getElementById("kotak_cari_ruangan")) {
         const kotakCari = document.createElement("input");
         kotakCari.type = "text";
+        kotakCari.id = "kotak_cari_ruangan";
         kotakCari.placeholder = "Cari kode ruangan, nama ruangan, atau gedung...";
         kotakCari.style.width = "100%";
         kotakCari.style.maxWidth = "400px";
@@ -19,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const baris = tabelRuangan.querySelectorAll("tbody tr");
 
             baris.forEach(function (row) {
-                if (row.cells.length === 1) return; // Lewati baris "Belum ada ruangan"
+                if (row.cells.length === 1) return;
                 const teks = row.textContent.toLowerCase();
                 row.style.display = teks.includes(keyword) ? "" : "none";
             });
@@ -33,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const inputNama = formRuangan.querySelector('[name="nama_ruangan"]');
         const inputKapasitas = formRuangan.querySelector('[name="kapasitas"]');
 
-        // Otomatis kapitalkan kode ruangan saat diketik (misal: if-201 -> IF-201)
         if (inputKode) {
             inputKode.addEventListener("input", function () {
                 inputKode.value = inputKode.value.toUpperCase();

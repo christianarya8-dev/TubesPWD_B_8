@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const inputIdentitas = form.querySelector('[name="nomor_identitas"]');
     const inputTelepon = form.querySelector('[name="no_telepon"]');
 
-    // Tambahkan checkbox "Tampilkan Password" pada halaman login & register
-    if (inputSandi) {
+    // Tambahkan checkbox "Tampilkan Password" (cegah duplikasi dengan pengecekan ID)
+    if (inputSandi && !document.getElementById("toggle_sandi")) {
         const wadahToggle = document.createElement("div");
         wadahToggle.style.marginTop = "8px";
         wadahToggle.style.fontSize = "14px";
@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Khusus halaman register (ada input konfirmasi_sandi), cek minimal 8 karakter
             if (inputKonfirmasi && inputSandi.value.length < 8) {
                 event.preventDefault();
                 alert("Password minimal harus 8 karakter!");

@@ -224,33 +224,27 @@ button:active {
 }
 
 .bawah a:hover {
-  text-decoration-color: var(--ink);
+    text-decoration: underline;
 }
 
-/* =========================================================
-   RESPONSIF
-   ========================================================= */
-@media (max-width: 600px) {
-  body {
-    padding: 20px 12px;
-  }
-
-  .form-box {
-    padding: 30px 22px 28px;
-  }
-
-  h1 {
-    font-size: 1.45rem;
-  }
-
-  button {
-    width: 100%;
-  }
+.daftar-fasilitas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 6px;
+    margin-bottom: 14px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-    animation: none !important;
-  }
+.daftar-fasilitas .item-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.daftar-fasilitas input[type="checkbox"] {
+    width: auto;
+    margin: 0;
 }

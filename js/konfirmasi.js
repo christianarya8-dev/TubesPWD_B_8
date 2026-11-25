@@ -29,8 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // 3. Tambahkan filter status otomatis di atas tabel admin & riwayat peminjaman
     const tabel = document.querySelector("table");
     const path = window.location.pathname;
-    if (tabel && (path.includes("admin_peminjaman.php") || path.includes("riwayat_peminjaman.php"))) {
+    if (tabel && (path.includes("admin_peminjaman.php") || path.includes("riwayat_peminjaman.php")) && !document.getElementById("wadah_filter_status")) {
         const wadahFilter = document.createElement("div");
+        wadahFilter.id = "wadah_filter_status";
         wadahFilter.style.marginBottom = "15px";
 
         const label = document.createElement("label");

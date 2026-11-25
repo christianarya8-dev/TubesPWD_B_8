@@ -28,8 +28,10 @@ if ($html === false) {
 
 // Tampilkan atau hapus blok Menu Admin sesuai peran pengguna
 if ($isAdmin) {
+    $html = preg_replace('/<!-- MAHASISWA_START -->.*?<!-- MAHASISWA_END -->/s', "", $html);
     $html = str_replace(["<!-- ADMIN_START -->", "<!-- ADMIN_END -->"], "", $html);
 } else {
+    $html = str_replace(["<!-- MAHASISWA_START -->", "<!-- MAHASISWA_END -->"], "", $html);
     $html = preg_replace('/<!-- ADMIN_START -->.*?<!-- ADMIN_END -->/s', "", $html);
 }
 
