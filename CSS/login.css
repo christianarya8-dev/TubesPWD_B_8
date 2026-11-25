@@ -1,21 +1,43 @@
 :root {
-  --primary-dark: #111827;
-  --primary-hover: #1f2937;
-  --bg-app: #f4f6f9;
-  --bg-card: #ffffff;
-  --text-main: #1f2933;
-  --text-secondary: #4b5563;
-  --border-color: #cbd5e1;
-  --focus-border: #111827;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --ink: #0a0a0a;
+  --ink-soft: #262626;
+  --paper: #ffffff;
+  --bg-app: #f4f4f4;
+  --bg-subtle: #fafafa;
+  --bg-hover: #efefef;
+  --border-color: #e2e2e2;
+  --border-strong: #bdbdbd;
+  --text-main: #171717;
+  --text-secondary: #6b6b6b;
+
+  --danger: #dc2626;
+  --success: #16a34a;
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 8px 16px -6px rgba(0, 0, 0, 0.10),
+    0 24px 48px -16px rgba(0, 0, 0, 0.16);
+  --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-lift: 0 12px 24px -10px rgba(0, 0, 0, 0.35);
+  --transition-smooth: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   DASAR HALAMAN
+   ========================================================= */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.09) 1px, transparent 1.2px);
+  background-size: 22px 22px;
   margin: 0;
   padding: 50px 16px;
   color: var(--text-main);
@@ -23,36 +45,58 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  box-sizing: border-box;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
+a:focus-visible,
+button:focus-visible,
+.opsi-peran:has(input:focus-visible) {
+  outline: 3px solid rgba(10, 10, 10, 0.4);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   KOTAK UTAMA
+   ========================================================= */
 .kotak {
   max-width: 420px;
   width: 100%;
   margin: auto;
-  background: var(--bg-card);
-  padding: 40px 32px;
+  background: var(--paper);
+  padding: 40px 32px 34px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
-  border: 1px solid #e2e8f0;
-  animation: fadeIn 0.3s ease-out;
-  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  border-top: 6px solid var(--ink);
+  animation: kotakMasuk 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes kotakMasuk {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* Judul di tengah, garis aksen pendek ikut di tengah */
 h1 {
-  color: var(--primary-dark);
+  color: var(--ink);
   text-align: center;
   margin-top: 0;
-  margin-bottom: 6px;
-  font-size: 1.5rem;
+  margin-bottom: 8px;
+  font-size: 1.65rem;
   font-weight: 800;
-  letter-spacing: -0.4px;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 4px;
+  margin: 16px auto 0;
+  background: var(--ink);
+  border-radius: 4px;
 }
 
 h2 {
@@ -60,17 +104,19 @@ h2 {
   text-align: center;
   font-size: 0.92rem;
   font-weight: 600;
-  margin-top: 0;
-  margin-bottom: 24px;
+  margin-top: 14px;
+  margin-bottom: 26px;
 }
 
-/* --- PEMILIH PERAN (MAHASISWA / ADMIN) --- */
+/* =========================================================
+   PEMILIH PERAN (MAHASISWA / ADMIN)
+   ========================================================= */
 .label-peran {
   display: block;
   margin-bottom: 8px;
   font-weight: 700;
   font-size: 0.88rem;
-  color: var(--text-main);
+  color: var(--ink);
 }
 
 .pilih-peran {
@@ -86,10 +132,10 @@ h2 {
   justify-content: center;
   gap: 8px;
   margin: 0;
-  padding: 11px 12px;
-  border: 1px solid var(--border-color);
+  padding: 12px;
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  background-color: #f8fafc;
+  background-color: var(--bg-subtle);
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 700;
@@ -98,117 +144,186 @@ h2 {
 }
 
 .opsi-peran:hover {
-  border-color: #94a3b8;
-  color: var(--primary-dark);
+  background: var(--paper);
+  border-color: var(--ink);
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
 }
 
 .opsi-peran input[type="radio"] {
   width: auto;
   margin: 0;
-  accent-color: var(--primary-dark);
+  accent-color: var(--ink);
   cursor: pointer;
 }
 
+/* Peran terpilih = hitam penuh, sama seperti menu admin */
 .opsi-peran:has(input:checked) {
-  background-color: var(--primary-dark);
-  border-color: var(--primary-dark);
-  color: #ffffff;
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  box-shadow: var(--shadow-btn);
+}
+
+.opsi-peran:has(input:checked):hover {
+  background-color: var(--ink-soft);
+  border-color: var(--ink-soft);
 }
 
 .opsi-peran:has(input:checked) input[type="radio"] {
-  accent-color: #ffffff;
+  accent-color: var(--paper);
 }
 
-/* --- FORM & INPUT --- */
+/* =========================================================
+   FORM & INPUT
+   ========================================================= */
 label {
   display: block;
   margin-top: 18px;
   margin-bottom: 6px;
   font-weight: 700;
   font-size: 0.88rem;
-  color: var(--text-main);
+  color: var(--ink);
 }
 
 input {
   width: 100%;
-  padding: 11px 14px;
+  padding: 12px 14px;
   margin-top: 0;
-  box-sizing: border-box;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-family: inherit;
-  background-color: #f8fafc;
+  color: var(--text-main);
+  background-color: var(--bg-subtle);
   transition: var(--transition-smooth);
+}
+
+input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+input:hover {
+  border-color: var(--ink-soft);
 }
 
 input:focus {
   outline: none;
-  border-color: var(--focus-border);
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+  border-color: var(--ink);
+  background-color: var(--paper);
+  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.14);
 }
 
-/* --- TOMBOL LOGIN --- */
+input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   TOMBOL LOGIN (HITAM PENUH)
+   ========================================================= */
 button {
   width: 100%;
-  padding: 12px 20px;
-  margin-top: 24px;
-  background: var(--primary-dark);
-  color: #ffffff;
-  border: none;
+  padding: 13px 26px;
+  margin-top: 28px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1.5px solid var(--ink);
   border-radius: var(--radius-sm);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-family: inherit;
+  letter-spacing: 0.1px;
   cursor: pointer;
+  box-shadow: var(--shadow-btn);
   transition: var(--transition-smooth);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
 }
 
-/* --- PESAN NOTIFIKASI --- */
+button:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* =========================================================
+   PESAN NOTIFIKASI
+   ========================================================= */
 .pesan {
-  padding: 12px 16px;
+  padding: 13px 16px;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 18px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .pesan.error {
-  background: #fee2e2;
+  background: #fef2f2;
   color: #991b1b;
-  border-left: 4px solid #dc2626;
+  border: 1px solid #fecaca;
+  border-left: 6px solid var(--danger);
 }
 
 .pesan.sukses {
-  background: #dcfce7;
+  background: #f0fdf4;
   color: #166534;
-  border-left: 4px solid #16a34a;
+  border: 1px solid #bbf7d0;
+  border-left: 6px solid var(--success);
 }
 
-/* --- TAUTAN BAWAH --- */
+/* =========================================================
+   TAUTAN BAWAH
+   ========================================================= */
 .bawah {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 26px;
   margin-bottom: 0;
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
 
 .bawah a {
-  color: #2563eb;
-  text-decoration: none;
+  color: var(--ink);
   font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--border-strong);
+  transition: var(--transition-smooth);
 }
 
 .bawah a:hover {
-  color: #1d4ed8;
-  text-decoration: underline;
+  text-decoration-color: var(--ink);
+}
+
+/* =========================================================
+   RESPONSIF
+   ========================================================= */
+@media (max-width: 600px) {
+  body {
+    padding: 20px 12px;
+    align-items: flex-start;
+  }
+
+  .kotak {
+    padding: 30px 22px 28px;
+  }
+
+  h1 {
+    font-size: 1.45rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

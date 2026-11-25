@@ -1,139 +1,319 @@
+:root {
+  --ink: #0a0a0a;
+  --ink-soft: #262626;
+  --paper: #ffffff;
+  --bg-app: #f4f4f4;
+  --bg-subtle: #fafafa;
+  --bg-hover: #efefef;
+  --border-color: #e2e2e2;
+  --border-strong: #bdbdbd;
+  --text-main: #171717;
+  --text-secondary: #6b6b6b;
+
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-glow: rgba(220, 38, 38, 0.38);
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 8px 16px -6px rgba(0, 0, 0, 0.10),
+    0 24px 48px -16px rgba(0, 0, 0, 0.16);
+  --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-lift: 0 12px 24px -10px rgba(0, 0, 0, 0.35);
+  --transition-smooth: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   DASAR HALAMAN
+   ========================================================= */
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
-    margin: 0;
-    padding: 30px 20px;
-    color: #1f2933;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-app);
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.09) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  margin: 0;
+  padding: 30px 20px;
+  color: var(--text-main);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(10, 10, 10, 0.4);
+  outline-offset: 3px;
 }
 
 .wadah {
-    max-width: 1150px;
-    margin: auto;
+  max-width: 1150px;
+  margin: auto;
+  animation: kotakMasuk 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes kotakMasuk {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 h1 {
-    color: #243b53;
-    margin-top: 0;
-    margin-bottom: 16px;
+  color: var(--ink);
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
 }
 
+h1::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 4px;
+  margin-top: 16px;
+  background: var(--ink);
+  border-radius: 4px;
+}
+
+/* =========================================================
+   NAVIGASI ATAS
+   ========================================================= */
 .navigasi {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .navigasi a {
-    text-decoration: none;
-    padding: 9px 15px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  transition: var(--transition-smooth);
 }
 
+.navigasi a:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Kembali = kartu terang, sama seperti kartu menu */
 .btn-kembali {
-    background: #e2e8f0;
-    color: #243b53;
+  background: var(--bg-subtle);
+  color: var(--ink);
+  border-color: var(--border-strong);
 }
 
 .btn-kembali:hover {
-    background: #cbd5e1;
+  background: var(--paper);
+  border-color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
 }
 
+/* Tambah = hitam penuh */
 .btn-tambah {
-    background: #243b53;
-    color: #ffffff;
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  box-shadow: var(--shadow-btn);
 }
 
 .btn-tambah:hover {
-    background: #334e68;
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
 }
 
+/* =========================================================
+   TABEL
+   border-collapse: separate agar sudut membulat dan garis atas
+   tebal bisa tampil seperti kotak utama
+   ========================================================= */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--paper);
+  border: 1px solid var(--border-color);
+  border-top: 6px solid var(--ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
-th, td {
-    padding: 12px;
-    border: 1px solid #dddddd;
-    text-align: left;
-    vertical-align: middle;
+th,
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.92rem;
 }
 
 th {
-    background: #243b53;
-    color: #ffffff;
+  background: var(--bg-subtle);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ink);
 }
 
+tbody tr {
+  transition: var(--transition-smooth);
+}
+
+tbody tr:hover {
+  background: var(--bg-subtle);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================================================
+   LENCANA STATUS
+   ========================================================= */
 .status-badge {
-    display: inline-block;
-    padding: 4px 9px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: bold;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid transparent;
 }
 
 .pending {
-    background: #fef3c7;
-    color: #a16207;
+  background: #fffbeb;
+  color: #a16207;
+  border-color: #fde68a;
 }
 
 .approved {
-    background: #dcfce7;
-    color: #15803d;
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
 }
 
 .rejected {
-    background: #fee2e2;
-    color: #b91c1c;
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 
 .cancelled {
-    background: #f1f5f9;
-    color: #64748b;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
 }
 
+/* =========================================================
+   TOMBOL AKSI DI DALAM TABEL
+   ========================================================= */
 .grup-aksi {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
+/* Edit = kartu terang */
 .btn-edit {
-    display: inline-block;
-    background: #2563eb;
-    color: #ffffff;
-    text-decoration: none;
-    padding: 6px 11px;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: bold;
+  display: inline-block;
+  background: var(--bg-subtle);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+  text-decoration: none;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: var(--transition-smooth);
 }
 
 .btn-edit:hover {
-    background: #1d4ed8;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
 }
 
 .form-batal {
-    display: inline;
-    margin: 0;
+  display: inline;
+  margin: 0;
 }
 
+/* Batalkan = merah, satu-satunya warna aksi */
 .btn-batal {
-    background: #b91c1c;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    padding: 6px 11px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
+  background: var(--danger);
+  color: var(--paper);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: var(--transition-smooth);
 }
 
 .btn-batal:hover {
-    background: #991b1b;
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px -10px var(--danger-glow);
+}
+
+.btn-batal:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.btn-batal:focus-visible {
+  outline-color: var(--danger-glow);
+}
+
+/* =========================================================
+   RESPONSIF
+   Tabel bisa digeser ke samping di layar sempit
+   ========================================================= */
+@media (max-width: 800px) {
+  body {
+    padding: 20px 12px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

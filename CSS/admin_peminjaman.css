@@ -1,34 +1,68 @@
 :root {
-  --primary-dark: #111827;
-  --primary-hover: #1f2937;
-  --bg-app: #f4f6f9;
-  --bg-card: #ffffff;
-  --text-main: #1f2933;
-  --text-secondary: #4b5563;
-  --border-color: #cbd5e1;
-  --focus-border: #111827;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
+  --ink: #0a0a0a;
+  --ink-soft: #262626;
+  --paper: #ffffff;
+  --bg-app: #f4f4f4;
+  --bg-subtle: #fafafa;
+  --bg-hover: #efefef;
+  --border-color: #e2e2e2;
+  --border-strong: #bdbdbd;
+  --text-main: #171717;
+  --text-secondary: #6b6b6b;
+  --text-muted: #9a9a9a;
+  --text-on-dark: #d4d4d4;
+
   --radius-sm: 8px;
   --radius-md: 14px;
-  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 10px 24px -8px rgba(0, 0, 0, 0.12);
+  --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --ring: 0 0 0 3px rgba(10, 10, 10, 0.15);
   --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   DASAR HALAMAN
+   ========================================================= */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
   margin: 0;
-  padding: 40px 20px;
+  padding: 32px 24px 48px;
   color: var(--text-main);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
 }
 
-/* --- NAVBAR ADMIN --- */
+body > * {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+form {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+a:focus-visible,
+button:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   NAVBAR ADMIN
+   ========================================================= */
 .navbar-admin {
-  background: var(--primary-dark);
-  padding: 18px 24px;
+  background: var(--ink);
+  padding: 16px 24px;
   border-radius: var(--radius-md);
   margin-bottom: 28px;
   display: flex;
@@ -40,7 +74,7 @@ body {
 }
 
 .navbar-brand {
-  color: #ffffff;
+  color: var(--paper);
   font-weight: 800;
   font-size: 1.15rem;
   letter-spacing: -0.3px;
@@ -50,11 +84,11 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .navbar-links a {
-  color: #94a3b8;
+  color: var(--text-muted);
   text-decoration: none;
   padding: 8px 14px;
   border-radius: var(--radius-sm);
@@ -64,111 +98,132 @@ body {
 }
 
 .navbar-links a:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--paper);
 }
 
 .navbar-links a.aktif {
-  background: #ffffff;
-  color: var(--primary-dark);
+  background: var(--paper);
+  color: var(--ink);
   font-weight: 700;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-admin a:focus-visible,
+.navbar-admin button:focus-visible {
+  outline-color: var(--paper);
 }
 
 .form-logout {
   display: inline;
-  margin: 0;
+  margin: 0 0 0 6px;
 }
 
 .btn-logout {
-  background: var(--danger);
-  color: #ffffff;
-  border: none;
-  padding: 9px 16px;
+  background: transparent;
+  color: var(--paper);
+  border: 1.5px solid var(--paper);
+  padding: 8px 16px;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  font-family: inherit;
   font-size: 0.9rem;
   font-weight: 700;
   transition: var(--transition-smooth);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .btn-logout:hover {
-  background: var(--danger-hover);
-  transform: translateY(-1px);
+  background: var(--paper);
+  color: var(--ink);
 }
 
-/* --- HEADER & JUDUL --- */
+.btn-logout:active {
+  transform: translateY(1px);
+}
+
+/* =========================================================
+   JUDUL HALAMAN
+   ========================================================= */
 h1 {
-  color: var(--primary-dark);
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 1.6rem;
+  color: var(--ink);
+  margin: 0 auto 20px;
+  padding: 0;
+  font-family: inherit;
+  font-size: 1.7rem;
   font-weight: 800;
+  line-height: 1.2;
   letter-spacing: -0.5px;
+  text-align: left;
 }
 
-/* --- MENU STATUS (Filter Tab) --- */
+/* =========================================================
+   MENU STATUS (FILTER TAB)
+   ========================================================= */
 .menu-status {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 24px;
 }
 
 .menu-status a {
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
-  background: var(--bg-card);
+  background: var(--paper);
   color: var(--text-secondary);
-  padding: 10px 16px;
+  padding: 9px 16px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-strong);
   font-size: 0.9rem;
   font-weight: 700;
   transition: var(--transition-smooth);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .menu-status a:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: var(--primary-dark);
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .menu-status a.aktif {
-  background: var(--primary-dark);
-  color: #ffffff;
-  border-color: var(--primary-dark);
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  box-shadow: var(--shadow-btn);
 }
 
 .badge-hitung {
-  background: rgba(100, 116, 139, 0.15);
-  padding: 2px 8px;
+  background: var(--bg-hover);
+  color: var(--ink-soft);
+  padding: 2px 9px;
   border-radius: 20px;
-  margin-left: 6px;
+  margin-left: 8px;
   font-size: 0.75rem;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .menu-status a.aktif .badge-hitung {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--paper);
 }
 
-/* --- TABEL DATA --- */
+/* =========================================================
+   TABEL DATA
+   ========================================================= */
 table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: var(--bg-card);
+  background: var(--paper);
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-strong);
 }
 
-th, td {
-  padding: 16px 18px;
+th,
+td {
+  padding: 15px 18px;
   border-bottom: 1px solid var(--border-color);
   text-align: left;
   vertical-align: middle;
@@ -176,13 +231,14 @@ th, td {
 }
 
 th {
-  background: #f8fafc;
-  color: var(--text-secondary);
+  background: var(--bg-subtle);
+  color: var(--ink);
   font-weight: 800;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  border-bottom: 2px solid var(--border-color);
+  font-size: 0.74rem;
+  letter-spacing: 0.6px;
+  border-bottom: 2px solid var(--ink);
+  white-space: nowrap;
 }
 
 tr:last-child td {
@@ -193,120 +249,227 @@ tbody tr {
   transition: background 0.15s ease;
 }
 
-tbody tr:hover {
-  background-color: #f8fafc;
+tbody tr:nth-child(even) {
+  background-color: var(--bg-subtle);
 }
 
-/* --- STATUS BADGES --- */
+tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+
+td[colspan] {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 36px 18px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   STATUS BADGE
+   Dibedakan dengan simbol dan gaya garis:
+   pending = garis putus, approved = hitam penuh,
+   rejected = garis tegas, cancelled = abu-abu
+   ========================================================= */
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 5px 12px;
+  gap: 6px;
+  padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  border: 1.5px solid transparent;
 }
 
 .pending {
-  background: #fef3c7;
-  color: #b45309;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px dashed var(--ink);
+}
+
+.pending::before {
+  content: "\25CB"; /* ○ */
 }
 
 .approved {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.approved::before {
+  content: "\2713"; /* ✓ */
 }
 
 .rejected {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+
+.rejected::before {
+  content: "\2715"; /* ✕ */
 }
 
 .cancelled {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  border-color: var(--border-strong);
 }
 
-/* --- INPUT & TEXTAREA --- */
+.cancelled::before {
+  content: "\2013"; /* – */
+}
+
+/* =========================================================
+   INPUT & TEXTAREA
+   ========================================================= */
 textarea {
   width: 100%;
-  max-width: 220px;
-  box-sizing: border-box;
+  max-width: 240px;
+  min-height: 64px;
   padding: 10px 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   font-family: inherit;
   font-size: 0.88rem;
-  background-color: #f8fafc;
+  color: var(--text-main);
+  background-color: var(--bg-subtle);
+  resize: vertical;
   transition: var(--transition-smooth);
+}
+
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+textarea:hover {
+  border-color: var(--text-secondary);
 }
 
 textarea:focus {
   outline: none;
-  border-color: var(--focus-border);
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+  border-color: var(--ink);
+  background-color: var(--paper);
+  box-shadow: var(--ring);
 }
 
-/* --- TOMBOL AKSI ADMIN --- */
+/* =========================================================
+   TOMBOL AKSI ADMIN
+   setuju = hitam penuh, tolak = putih berbingkai hitam
+   ========================================================= */
 .grup-tombol-aksi {
   margin-top: 8px;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .aksi-btn {
-  padding: 8px 14px;
+  padding: 8px 16px;
   cursor: pointer;
   border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 0.82rem;
-  transition: var(--transition-smooth);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   font-family: inherit;
+  transition: var(--transition-smooth);
+}
+
+.aksi-btn:active {
+  transform: translateY(1px);
 }
 
 .setuju {
-  background: #16a34a;
-  color: #ffffff;
-  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--shadow-btn);
 }
 
 .setuju:hover {
-  background: #15803d;
+  background: var(--ink-soft);
   transform: translateY(-1px);
 }
 
 .tolak {
-  background: var(--danger);
-  color: #ffffff;
-  border: none;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
 }
 
 .tolak:hover {
-  background: var(--danger-hover);
+  background: var(--ink);
+  color: var(--paper);
   transform: translateY(-1px);
 }
 
-/* --- ALERT / PESAN NOTIFIKASI --- */
+/* =========================================================
+   PESAN NOTIFIKASI
+   sukses = putih berbingkai, error = hitam penuh
+   ========================================================= */
 .pesan {
   padding: 14px 18px;
-  background: #dcfce7;
-  color: #166534;
-  border-left: 5px solid #16a34a;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-left: 6px solid var(--ink);
   border-radius: var(--radius-sm);
   margin-bottom: 20px;
   font-weight: 700;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  box-shadow: var(--shadow-btn);
+}
+
+.pesan::before {
+  content: "\2713\00a0"; /* ✓ */
 }
 
 .pesan.error {
-  background: #fee2e2;
-  color: #991b1b;
-  border-left-color: var(--danger);
+  background: var(--ink);
+  color: var(--paper);
 }
 
-form {
-  margin: 0;
+.pesan.error::before {
+  content: "\2715\00a0"; /* ✕ */
+}
+
+/* =========================================================
+   RESPONSIF
+   ========================================================= */
+@media (max-width: 900px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  textarea {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 16px 12px 32px;
+  }
+
+  .navbar-admin {
+    padding: 14px 16px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  th,
+  td {
+    padding: 12px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }

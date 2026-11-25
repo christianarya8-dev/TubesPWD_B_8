@@ -1,158 +1,303 @@
 :root {
-  --primary-dark: #111827;
-  --primary-hover: #1f2937;
-  --bg-app: #f4f6f9;
-  --bg-card: #ffffff;
-  --text-main: #1f2933;
-  --text-secondary: #4b5563;
-  --border-color: #cbd5e1;       /* Ditingkatkan konsistensinya agar garis pembatas lebih rapi */
-  --focus-border: #111827;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --ink: #0a0a0a;
+  --ink-soft: #262626;
+  --paper: #ffffff;
+  --bg-app: #f4f4f4;
+  --bg-subtle: #fafafa;
+  --bg-hover: #efefef;
+  --border-color: #e2e2e2;
+  --border-strong: #bdbdbd;
+  --text-main: #171717;
+  --text-secondary: #6b6b6b;
+
+  /* Khusus tombol logout */
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-glow: rgba(220, 38, 38, 0.38);
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 8px 16px -6px rgba(0, 0, 0, 0.10),
+    0 24px 48px -16px rgba(0, 0, 0, 0.16);
+  --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-lift: 0 12px 24px -10px rgba(0, 0, 0, 0.35);
+  --transition-smooth: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   DASAR HALAMAN
+   Latar bertitik tipis memberi tekstur tanpa menambah warna
+   ========================================================= */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.09) 1px, transparent 1.2px);
+  background-size: 22px 22px;
   padding: 50px 16px;
   color: var(--text-main);
   margin: 0;
   min-height: 100vh;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
-/* --- KOTAK UTAMA (CONTAINER) --- */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(10, 10, 10, 0.4);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   KOTAK UTAMA (CONTAINER)
+   ========================================================= */
 .kotak {
-  background: var(--bg-card);
-  padding: 40px;
+  background: var(--paper);
+  padding: 44px 44px 40px;
   border-radius: var(--radius-md);
-  max-width: 720px;
+  max-width: 760px;
   width: 100%;
   margin: auto;
   box-shadow: var(--shadow-card);
-  border: 1px solid #e2e8f0;
-  animation: fadeIn 0.3s ease-out;
-  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  border-top: 6px solid var(--ink);
+  animation: kotakMasuk 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes kotakMasuk {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-h1, h3 {
-  color: var(--primary-dark);
+h1,
+h3 {
+  color: var(--ink);
   font-weight: 800;
   letter-spacing: -0.4px;
 }
 
+/* Judul dengan garis aksen pendek, bukan garis penuh */
 h1 {
   margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 1.6rem;
-  border-bottom: 2px solid var(--border-color);
-  padding-bottom: 16px;
+  margin-bottom: 18px;
+  font-size: 1.85rem;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
 }
 
-/* --- PARAGRAF SELAMAT DATANG / TEKS UMUM --- */
+h1::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 4px;
+  margin-top: 16px;
+  background: var(--ink);
+  border-radius: 4px;
+}
+
+/* =========================================================
+   PARAGRAF SELAMAT DATANG / TEKS UMUM
+   ========================================================= */
 .kotak p {
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.96rem;
+  line-height: 1.65;
   margin-top: 0;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
+  max-width: 60ch;
 }
 
-/* --- GRUP MENU NAVIGASI --- */
+/* =========================================================
+   GRUP MENU NAVIGASI (KARTU DALAM GRID)
+   ========================================================= */
 .grup-menu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
   margin-bottom: 28px;
 }
 
 .grup-menu a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
   text-decoration: none;
-  background: #f8fafc;
-  color: var(--primary-dark);
-  padding: 12px 18px;
+  background: var(--bg-subtle);
+  color: var(--ink);
+  padding: 16px 20px;
   border-radius: var(--radius-sm);
   font-weight: 700;
-  font-size: 0.9rem;
-  border: 1px solid var(--border-color);
+  font-size: 0.92rem;
+  border: 1px solid var(--border-strong);
   transition: var(--transition-smooth);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  animation: menuMasuk 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Tanda panah kecil digambar dengan CSS, bergeser saat di-hover */
+.grup-menu a::after {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.45;
+  transition: var(--transition-smooth);
 }
 
 .grup-menu a:hover {
-  background: #ffffff;
-  border-color: #94a3b8;
-  transform: translateY(-1px);
-  color: #000000;
+  background: var(--paper);
+  border-color: var(--ink);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
 }
 
-/* --- KOTAK PANEL ADMIN --- */
+.grup-menu a:hover::after {
+  opacity: 1;
+  transform: translateX(4px) rotate(45deg);
+}
+
+.grup-menu a:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Satu momen masuk berurutan saat halaman dibuka */
+.grup-menu a:nth-child(1) { animation-delay: 0.10s; }
+.grup-menu a:nth-child(2) { animation-delay: 0.16s; }
+.grup-menu a:nth-child(3) { animation-delay: 0.22s; }
+.grup-menu a:nth-child(4) { animation-delay: 0.28s; }
+.grup-menu a:nth-child(5) { animation-delay: 0.34s; }
+.grup-menu a:nth-child(6) { animation-delay: 0.40s; }
+
+@keyframes menuMasuk {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   KOTAK PANEL ADMIN
+   ========================================================= */
 .kotak-admin {
-  background: #f8fafc;
+  background-color: var(--bg-subtle);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 12px,
+    rgba(0, 0, 0, 0.028) 12px 13px
+  );
   border: 1px solid var(--border-color);
-  border-left: 4px solid var(--primary-dark);
-  padding: 24px;
+  border-left: 6px solid var(--ink);
+  padding: 26px;
   border-radius: var(--radius-sm);
   margin-top: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .kotak-admin h3 {
   margin-top: 0;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   font-size: 1.1rem;
 }
 
 .grup-menu-admin {
   margin-bottom: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
+/* Menu admin = hitam penuh agar berbeda dari menu biasa */
 .grup-menu-admin a {
-  background: var(--primary-dark);
-  color: #ffffff;
-  border-color: var(--primary-dark);
-  box-shadow: 0 2px 4px rgba(17, 24, 39, 0.1);
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  box-shadow: var(--shadow-btn);
 }
 
 .grup-menu-admin a:hover {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
-  transform: translateY(-1px);
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
 }
 
-/* --- TOMBOL AKSI UTAMA (LOGOUT / KELUAR) --- */
+/* =========================================================
+   TOMBOL LOGOUT (MERAH)
+   ========================================================= */
 button {
-  margin-top: 28px;
-  padding: 12px 20px;
+  margin-top: 30px;
+  padding: 13px 26px;
   background: var(--danger);
-  color: #ffffff;
-  border: none;
+  color: var(--paper);
+  border: 1.5px solid var(--danger);
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-family: inherit;
+  letter-spacing: 0.1px;
+  box-shadow: var(--shadow-btn);
   transition: var(--transition-smooth);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 button:hover {
   background: var(--danger-hover);
-  transform: translateY(-1px);
+  border-color: var(--danger-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px -10px var(--danger-glow);
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+button:focus-visible {
+  outline-color: var(--danger-glow);
+}
+
+/* =========================================================
+   RESPONSIF
+   ========================================================= */
+@media (max-width: 600px) {
+  body {
+    padding: 20px 12px;
+    align-items: flex-start;
+  }
+
+  .kotak {
+    padding: 30px 22px 28px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .grup-menu {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .kotak-admin {
+    padding: 20px 18px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
