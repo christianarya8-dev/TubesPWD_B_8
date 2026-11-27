@@ -264,12 +264,12 @@ td[colspan] {
   font-weight: 600;
 }
 
-/* =========================================================
+/* 
    STATUS BADGE
    Dibedakan dengan simbol dan gaya garis:
    pending = garis putus, approved = hitam penuh,
    rejected = garis tegas, cancelled = abu-abu
-   ========================================================= */
+    */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -323,9 +323,9 @@ td[colspan] {
   content: "\2013"; /* – */
 }
 
-/* =========================================================
+/* 
    INPUT & TEXTAREA
-   ========================================================= */
+    */
 textarea {
   width: 100%;
   max-width: 240px;
@@ -356,10 +356,10 @@ textarea:focus {
   box-shadow: var(--ring);
 }
 
-/* =========================================================
+/* 
    TOMBOL AKSI ADMIN
    setuju = hitam penuh, tolak = putih berbingkai hitam
-   ========================================================= */
+   */
 .grup-tombol-aksi {
   margin-top: 8px;
   display: flex;
@@ -405,10 +405,10 @@ textarea:focus {
   transform: translateY(-1px);
 }
 
-/* =========================================================
+/* 
    PESAN NOTIFIKASI
    sukses = putih berbingkai, error = hitam penuh
-   ========================================================= */
+    */
 .pesan {
   padding: 14px 18px;
   background: var(--paper);
@@ -434,9 +434,9 @@ textarea:focus {
   content: "\2715\00a0"; /* ✕ */
 }
 
-/* =========================================================
+/* 
    RESPONSIF
-   ========================================================= */
+   */
 @media (max-width: 900px) {
   table {
     display: block;

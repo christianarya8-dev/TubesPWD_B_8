@@ -30,9 +30,9 @@
   box-sizing: border-box;
 }
 
-/* =========================================================
+/* 
    DASAR HALAMAN
-   ========================================================= */
+  */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
@@ -56,9 +56,9 @@ button:focus-visible,
   outline-offset: 3px;
 }
 
-/* =========================================================
+/*
    KOTAK UTAMA
-   ========================================================= */
+    */
 .kotak {
   max-width: 420px;
   width: 100%;
@@ -108,9 +108,9 @@ h2 {
   margin-bottom: 26px;
 }
 
-/* =========================================================
+/* 
    PEMILIH PERAN (MAHASISWA / ADMIN)
-   ========================================================= */
+   */
 .label-peran {
   display: block;
   margin-bottom: 8px;
@@ -175,9 +175,9 @@ h2 {
   accent-color: var(--paper);
 }
 
-/* =========================================================
+/* 
    FORM & INPUT
-   ========================================================= */
+   */
 label {
   display: block;
   margin-top: 18px;
@@ -221,9 +221,9 @@ input:disabled {
   cursor: not-allowed;
 }
 
-/* =========================================================
+/* 
    TOMBOL LOGIN (HITAM PENUH)
-   ========================================================= */
+    */
 button {
   width: 100%;
   padding: 13px 26px;
@@ -253,9 +253,9 @@ button:active {
   box-shadow: none;
 }
 
-/* =========================================================
+/* 
    PESAN NOTIFIKASI
-   ========================================================= */
+    */
 .pesan {
   padding: 13px 16px;
   border-radius: var(--radius-sm);
@@ -278,9 +278,9 @@ button:active {
   border-left: 6px solid var(--success);
 }
 
-/* =========================================================
+/* 
    TAUTAN BAWAH
-   ========================================================= */
+    */
 .bawah {
   text-align: center;
   margin-top: 26px;
@@ -303,9 +303,9 @@ button:active {
   text-decoration-color: var(--ink);
 }
 
-/* =========================================================
+/* 
    RESPONSIF
-   ========================================================= */
+  */
 @media (max-width: 600px) {
   body {
     padding: 20px 12px;

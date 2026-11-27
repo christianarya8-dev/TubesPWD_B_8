@@ -26,9 +26,9 @@
   box-sizing: border-box;
 }
 
-/* =========================================================
+/* 
    DASAR HALAMAN
-   ========================================================= */
+   */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
@@ -49,9 +49,9 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-/* =========================================================
+/* 
    KOTAK UTAMA (CARD)
-   ========================================================= */
+    */
 .kotak {
   width: 100%;
   max-width: 520px;
@@ -88,10 +88,10 @@ h1 {
   line-height: 1.6;
 }
 
-/* =========================================================
+/* 
    DETAIL BOX (INFORMASI DATA)
    Label (strong/b) di kiri, isi di kanan
-   ========================================================= */
+    */
 .detail-box {
   background: var(--bg-subtle);
   border: 1px solid var(--border-color);
@@ -127,9 +127,9 @@ h1 {
   letter-spacing: 0.2px;
 }
 
-/* =========================================================
+/* 
    PESAN ERROR
-   ========================================================= */
+    */
 .pesan-error {
   padding: 14px 18px;
   border-radius: var(--radius-sm);
@@ -146,12 +146,12 @@ h1 {
   content: "\2715\00a0"; /* ✕ */
 }
 
-/* =========================================================
+/* 
    GRUP AKSI & TOMBOL
    batal-peminjaman = hitam penuh (aksi utama)
    kembali          = putih berbingkai hitam (aksi sekunder)
    kembali-penuh    = hitam penuh selebar kotak
-   ========================================================= */
+    */
 .grup-aksi {
   display: flex;
   flex-wrap: wrap;
@@ -227,9 +227,9 @@ h1 {
   box-shadow: 0 8px 16px -6px rgba(0, 0, 0, 0.35);
 }
 
-/* =========================================================
+/* 
    RESPONSIF
-   ========================================================= */
+   */
 @media (max-width: 480px) {
   body {
     padding: 20px 12px;

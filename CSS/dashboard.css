@@ -32,10 +32,10 @@
   box-sizing: border-box;
 }
 
-/* =========================================================
+/* 
    DASAR HALAMAN
    Latar bertitik tipis memberi tekstur tanpa menambah warna
-   ========================================================= */
+   */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
@@ -58,9 +58,9 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-/* =========================================================
+/* 
    KOTAK UTAMA (CONTAINER)
-   ========================================================= */
+    */
 .kotak {
   background: var(--paper);
   padding: 44px 44px 40px;
@@ -105,9 +105,9 @@ h1::after {
   border-radius: 4px;
 }
 
-/* =========================================================
+/* 
    PARAGRAF SELAMAT DATANG / TEKS UMUM
-   ========================================================= */
+  */
 .kotak p {
   color: var(--text-secondary);
   font-size: 0.96rem;
@@ -117,9 +117,9 @@ h1::after {
   max-width: 60ch;
 }
 
-/* =========================================================
+/* 
    GRUP MENU NAVIGASI (KARTU DALAM GRID)
-   ========================================================= */
+  */
 .grup-menu {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -189,9 +189,9 @@ h1::after {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* =========================================================
+/* 
    KOTAK PANEL ADMIN
-   ========================================================= */
+   */
 .kotak-admin {
   background-color: var(--bg-subtle);
   background-image: repeating-linear-gradient(
@@ -229,9 +229,9 @@ h1::after {
   border-color: var(--ink-soft);
 }
 
-/* =========================================================
+/*
    TOMBOL LOGOUT (MERAH)
-   ========================================================= */
+    */
 button {
   margin-top: 30px;
   padding: 13px 26px;
@@ -264,9 +264,9 @@ button:focus-visible {
   outline-color: var(--danger-glow);
 }
 
-/* =========================================================
+/* 
    RESPONSIF
-   ========================================================= */
+    */
 @media (max-width: 600px) {
   body {
     padding: 20px 12px;

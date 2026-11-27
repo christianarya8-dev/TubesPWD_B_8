@@ -29,9 +29,7 @@
   box-sizing: border-box;
 }
 
-/* =========================================================
-   DASAR HALAMAN
-   ========================================================= */
+/*DASAR HALAMAN */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
@@ -50,9 +48,7 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-/* =========================================================
-   KOTAK FORM
-   ========================================================= */
+/*KOTAK FORM*/
 .form-box {
   max-width: 500px;
   margin: auto;
@@ -90,9 +86,9 @@ h1::after {
   border-radius: 4px;
 }
 
-/* =========================================================
-   FORM INPUT, SELECT & TEXTAREA
-   ========================================================= */
+
+   /*FORM INPUT, SELECT & TEXTAREA*/
+
 label {
   display: block;
   margin-top: 18px;
