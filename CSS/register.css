@@ -28,9 +28,9 @@
   box-sizing: border-box;
 }
 
-/* =========================================================
+/* 
    DASAR HALAMAN
-   ========================================================= */
+    */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-app);
@@ -53,9 +53,9 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-/* =========================================================
+/* 
    KOTAK UTAMA (CARD FORM)
-   ========================================================= */
+    */
 .kotak {
   max-width: 420px;
   width: 100%;
@@ -150,9 +150,9 @@ input:disabled {
   cursor: not-allowed;
 }
 
-/* =========================================================
+/* 
    TOMBOL AKSI (HITAM PENUH)
-   ========================================================= */
+    */
 button {
   width: 100%;
   padding: 13px 26px;
@@ -182,9 +182,9 @@ button:active {
   box-shadow: none;
 }
 
-/* =========================================================
+/* 
    PESAN ERROR
-   ========================================================= */
+   */
 .pesan {
   padding: 13px 16px;
   margin-bottom: 18px;
@@ -197,9 +197,9 @@ button:active {
   border-left: 6px solid var(--danger);
 }
 
-/* =========================================================
+/* 
    TAUTAN BAWAH
-   ========================================================= */
+   */
 .bawah {
   text-align: center;
   margin-top: 26px;
@@ -222,9 +222,9 @@ button:active {
   text-decoration-color: var(--ink);
 }
 
-/* =========================================================
+/* 
    RESPONSIF
-   ========================================================= */
+   */
 @media (max-width: 600px) {
   body {
     padding: 20px 12px;
@@ -245,4 +245,38 @@ button:active {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/*
+  STATUS DETEKSI EMAIL REAL-TIME
+*/
+
+.status-email {
+  display: block;
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.status-email.memeriksa {
+  color: var(--text-secondary);
+}
+
+.status-email.tersedia {
+  color: #15803d;
+}
+
+.status-email.terpakai {
+  color: var(--danger);
+}
+
+input.input-error {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
+}
+
+input.input-sukses {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
 }

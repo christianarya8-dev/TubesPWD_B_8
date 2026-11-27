@@ -14,14 +14,37 @@
     <!-- PESAN_END -->
 
     <div class="info-akun">
-        <p><strong>Email:</strong> {{EMAIL}}</p>
-        <p><strong>Peran:</strong> {{PERAN}}</p>
+        <div class="header-profil">
+            <img id="preview-foto-profil"
+                 src="{{FOTO_PROFIL}}"
+                 alt="Foto Profil {{NAMA_LENGKAP}}"
+                 class="avatar-profil" />
+            <div class="detail-akun">
+                <p class="nama-akun-tampil">{{NAMA_LENGKAP}}</p>
+                <p><strong>Email:</strong> {{EMAIL}}</p>
+                <p><strong>Peran:</strong> {{PERAN}}</p>
+            </div>
+        </div>
     </div>
 
-    <form method="post" action="profil.php">
+    <form method="post" action="profil.php" enctype="multipart/form-data">
         <input type="hidden"
                name="csrf_token"
                value="{{CSRF_TOKEN}}" />
+
+        <label for="foto_profil">Foto Profil (JPG, PNG, WEBP — Maks. 2 MB)</label>
+        <input type="file"
+               id="foto_profil"
+               name="foto_profil"
+               accept="image/jpeg,image/png,image/webp" />
+        <small id="info-foto-profil" class="petunjuk-input">Pilih gambar untuk menambahkan atau mengganti foto profil.</small>
+
+        <!-- HAPUS_FOTO_START -->
+        <div class="opsi-hapus-foto">
+            <input type="checkbox" id="hapus_foto" name="hapus_foto" value="1" />
+            <label for="hapus_foto">Hapus foto profil saat ini</label>
+        </div>
+        <!-- HAPUS_FOTO_END -->
 
         <label for="nama">Nama Lengkap</label>
         <input type="text"
@@ -53,6 +76,5 @@
     </p>
 </div>
 <script src="JS/auth.js"></script>
-    <script src="js/auth.js"></script>
 </body>
 </html>
